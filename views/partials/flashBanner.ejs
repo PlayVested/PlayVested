@@ -1,0 +1,13 @@
+<% if ((error && error.length) || (warning && warning.length) || (success && success.length)) { %>
+    <div class="container-fluid">
+        <% if (error && error.length) { %>
+            <div class="alert alert-danger" role="alert"><%= error %></div>
+        <% } %>
+        <% if (warning && warning.length) { %>
+            <div class="alert alert-warning" role="alert"><%= warning %></div>
+        <% } %>
+        <% if (success && success.length) { %>
+            <div class="alert alert-success" role="alert"><%= success %></div>
+        <% } %>
+    </div>
+<% } %>

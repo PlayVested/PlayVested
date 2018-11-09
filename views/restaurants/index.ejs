@@ -1,0 +1,26 @@
+<% include ../partials/header %>
+
+    <h1>This is the restaurant index page</h1>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <ul>
+            <% restaurants.forEach((restaurant) => { %>
+                <li>
+                    <a href="/restaurants/<%= restaurant._id %>">
+                        <%= restaurant.name %>
+                    </a>
+                </li>
+            <% }); %>
+            </ul>
+
+            <% if (user) { %>
+                <a href="/restaurants/new" class="btn btn-lg btn-primary">Add Restaurant</a>
+            <% } %>
+        </div>
+        <div class="col-lg-6">
+            <% include ../partials/recommendList %>
+        </div>
+    </div>
+
+<% include ../partials/footer %>

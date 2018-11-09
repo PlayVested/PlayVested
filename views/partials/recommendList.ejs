@@ -1,0 +1,25 @@
+<% if (recommendations.length) { %>
+    <h2>Recommendations</h2>
+    <% recommendations.forEach((recommendation) => { %>
+        <%
+            let linkName = recommendation.restaurant.name;
+            let menuItemPart = ``;
+            if (typeof recommendation.menuItem !== 'undefined' && recommendation.menuItem) {
+                menuItemPart += `/menuItems/${recommendation.menuItem._id}`;
+                linkName = recommendation.menuItem.name;
+            }
+        %>
+        <div class="row">
+            <div class="col-lg-6 float-left">
+                <a href="/restaurants/<%= recommendation.restaurant._id %><%= menuItemPart %>">
+                    <%= linkName %>
+                </a>
+            </div>
+            <div class="col-lg-6 float-right">
+                <form class="delete-item" action="/users/share/<%= user._id %>/<%= recommendation._id %>?_method=DELETE" method="POST">
+                    <button class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    <% }); %>
+<% } %>

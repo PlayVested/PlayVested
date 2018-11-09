@@ -1,0 +1,17 @@
+<% if (user && user.friends.length) { %>
+    <div class="dropdown item-action">
+        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Recommend to...</button>
+        <div class="dropdown-menu" id="friendDropdown">
+            <input type="text" id="friendInput" onkeyup="filterFunction('friendInput', 'friendDropdown')" placeholder="Search for friends...">
+            <% user.friends.forEach((friend) => {
+                let restaurantPart = `restaurant=${restaurant._id}`;
+                let menuItemPart = ``; 
+                if (typeof menuItem !== 'undefined') {
+                    menuItemPart += `&menuItem=${menuItem._id}`;
+                }
+            %>
+                <a class="dropdown-item" href="/users/share/<%= friend._id %>?<%= restaurantPart %><%= menuItemPart %>"><%= friend.getDisplayName() %></a>
+            <% }); %>
+        </div>
+    </div>
+<% } %>

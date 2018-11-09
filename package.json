@@ -1,0 +1,42 @@
+{
+  "name": "playvested",
+  "version": "1.0.0",
+  "description": "App to keep track of what you've had at a restaurant and what you want next time",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "debug": "nodemon --inspect app.js",
+    "test": "jest",
+    "publish": "git push heroku master"
+  },
+  "author": "Eric Arnold",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "connect-flash": "^0.1.1",
+    "ejs": "^2.6.1",
+    "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "method-override": "^3.0.0",
+    "mongoose": "^5.2.13",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
+    "passport-local-mongoose": "^5.0.1"
+  },
+  "devDependencies": {
+    "jest": "^23.6.0",
+    "supertest": "^3.3.0"
+  },
+  "directories": {
+    "lib": "lib",
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/PlayVested/PlayVested.git"
+  },
+  "bugs": {
+    "url": "https://github.com/PlayVested/PlayVested/issues"
+  },
+  "homepage": "https://github.com/PlayVested/PlayVested#readme"
+}

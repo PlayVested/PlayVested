@@ -1,0 +1,43 @@
+<% include ../partials/header %>
+
+    <a href="/restaurants/<%= restaurant._id %>">Back</a>
+
+    <div>
+        <h1 class="page-header">
+            <%= menuItem.name %>
+        </h1>
+        <div class="item-action">
+            <form class="delete-item" action="/restaurants/<%= restaurant._id %>/menuItems/<%= menuItem._id %>?_method=DELETE" method="POST">
+                <button class="btn btn-danger">Delete</button>
+            </form>
+        </div>
+        <div class="item-action">
+            <a href="/restaurants/<%= restaurant._id %>/menuItems/<%= menuItem._id %>/edit" class="btn btn-warning">Edit</a>
+        </div>
+        <% include ../partials/recommendDropdown %>
+    
+        <div class="container">
+            <% if (user) { %>
+                <h2>Notes</h2>
+                <div class="note-container">
+                    <form class="float-left" action="/restaurants/<%= restaurant._id %>/menuItems/<%= menuItem._id %>/notes" method="POST">
+                        <textarea name="note[body]" cols="50" placeholder="Add notes here..." required><%= (note ? note.body : '') %></textarea>
+                        <button class="btn btn-primary btn-block">Save</button>
+                    </form>
+                </div>
+            <% } %>
+
+            <h2>Description</h2>
+            <div>
+                <%= menuItem.description %>
+            </div>
+
+            <%
+            const baseRatingLink = `/restaurants/${restaurant._id}/menuItems/${menuItem._id}/ratings`;
+            const ratings = filterUserOwned(user, menuItem.ratings); 
+            %>
+            <% include ../partials/ratings %>
+        </div>
+    </div>
+
+<% include ../partials/footer %>

@@ -1,0 +1,46 @@
+.img-thumbnail img {
+    width: 100%;
+}
+
+.img-thumbnail {
+    padding: 0;
+}
+
+.img-thumbnail .caption {
+    padding: 9px;
+}
+
+.delete-item {
+    display: inline;
+}
+
+.new-item-form {
+    width: 30%;
+    margin: 25px auto;
+}
+
+.new-item-form .form-inline .form-group input {
+    margin: 7px auto;
+    width: 100%;
+}
+
+.new-item-form div {
+    width: 100%;
+}
+
+.page-header {
+    display: inline-block;
+}
+
+.item-action {
+    float: right;
+    margin: 5px;
+}
+
+.checkin-item {
+    margin-bottom: 5px;
+}
+
+.note-container {
+    overflow: auto;
+}

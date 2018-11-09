@@ -1,0 +1,134 @@
+<% include ../partials/header %>
+
+    <div>
+        <a href="/restaurants">Back</a>
+    </div>
+    <h1 class="page-header">
+        <%= restaurant.name %>
+    </h1>
+    <% if (user) { %>
+        <div class="item-action">
+            <form class="delete-item" action="/restaurants/<%= restaurant._id %>?_method=DELETE" method="POST">
+                <button class="btn btn-danger">Delete</button>
+            </form>
+        </div>
+        <div class="item-action">
+            <a href="/restaurants/<%= restaurant._id %>/edit" class="btn btn-warning">Edit</a>
+        </div>
+    <% } %>
+
+    <% if (lists.length) { %>
+        <div class="dropdown item-action">
+            <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">Add to List</button>
+            <div class="dropdown-menu" id="listDropdown">
+                <input type="text" id="listInput" onkeyup="filterFunction('listInput', 'listDropdown')" placeholder="Search for lists...">
+                <% lists.forEach((list) => { %>
+                    <a class="dropdown-item" href="/lists/<%= list._id %>/addRestaurant/<%= restaurant._id %>"><%= list.name %></a>
+                <% }); %>
+            </div>
+        </div>
+    <% } %>
+    <% include ../partials/recommendDropdown %>
+
+    <div class="container">
+        <% if (user) { %>
+            <div>
+                <a href="/restaurants/<%= restaurant._id %>/checkin" class="btn btn-warning">Checkin</a>
+            </div>
+            <h2>Notes</h2>
+            <div class="note-container">
+                <form class="float-left" action="/restaurants/<%= restaurant._id %>/notes" method="POST">
+                    <textarea name="note[body]" cols="50" placeholder="Add notes here..." required><%= (note ? note.body : '') %></textarea>
+                    <button class="btn btn-primary btn-block">Save</button>
+                </form>
+            </div>
+        <% } %>
+
+        <% if (restaurant.website) { %>
+            <h2>Website</h2>
+            <div class="container">
+                <a href="<%= restaurant.website %>" target="_blank"><%= restaurant.website %></a>
+            </div>
+        <% } %>
+
+        <% if (restaurant.phone) { %>
+            <h2>Phone</h2>
+            <div class="container">
+                <%= restaurant.phone %>
+            </div>
+        <% } %>
+
+        <% if (restaurant.location && restaurant.location.address) { %>
+            <h2>Address</h2>
+            <div class="container">
+                <%= restaurant.location.address %>
+            </div>
+        <% } %>
+
+        <h2>Description</h2>
+        <div class="container">
+            <%= restaurant.description %>
+        </div>
+
+        <%
+        const baseRatingLink = `/restaurants/${restaurant._id}/ratings`;
+        const ratings = filterUserOwned(user, restaurant.ratings); 
+        %>
+        <% include ../partials/ratings %>
+
+        <div class="float-right">
+            <% include ../partials/recommendList %>
+        </div>
+
+        <h2>
+            <div class="row">
+                <div class="col-3">
+                    Menu Items
+                </div>
+                <div class="col-3">
+                    <% if (user) { %>
+                        <a href="/restaurants/<%= restaurant._id %>/menuItems/new" class="btn btn-xs btn-primary">+</a>
+                    <% } %>
+                </div>
+            </div>
+        </h2>
+        <% if (restaurant.menuItems.length) { %>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <h4>Name</h4>
+                    </div>
+                    <% if (user) { %>
+                        <div class="col-lg-3">
+                            <h4>Rating</h4>
+                        </div>
+                    <% } %>
+                    <div class="col-lg-6">
+                        <h4>Description</h4>
+                    </div>
+                </div>
+                <% restaurant.menuItems.forEach((menuItem) => { %>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <a href="/restaurants/<%= restaurant._id %>/menuItems/<%= menuItem._id %>"><%= menuItem.name %></a>
+                        </div>
+                        <% if (user) { %>
+                            <div class="col-lg-1">
+                                <%- averageRating(menuItem.ratings, user) %>
+                            </div>
+                            <div class="col-lg-2">
+                                <a href="/restaurants/<%= restaurant._id %>/menuItems/<%= menuItem._id %>/ratings/new" class="btn btn-xs btn-primary">+</a>
+                            </div>
+                        <% } %>
+                        <div class="col-lg-6">
+                            <%= limitText(menuItem.description, 20) %>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } %>
+    </div>
+
+    <script type="text/javascript" src="/script/dropdownHandler.js"></script>
+
+<% include ../partials/footer %>
