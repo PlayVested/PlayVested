@@ -14,6 +14,9 @@ const seedData = require('./seedData');
 
 const charitiesRoutes = require('./routes/charities');
 const indexRoutes = require('./routes/index');
+const donationRoutes = require('./routes/donations');
+const gameRoutes = require('./routes/games');
+const recordRoutes = require('./routes/records');
 const userRoutes = require('./routes/users');
 
 app.use(express.static(__dirname + "/public"));
@@ -70,6 +73,9 @@ app.use((req, res, next) => {
 // wire up all the sub-routes
 app.use('/', indexRoutes);
 app.use('/charities', charitiesRoutes);
+app.use('/donations', donationRoutes);
+app.use('/games', gameRoutes);
+app.use('/records', recordRoutes);
 app.use('/users', userRoutes);
 
 const PORT = process.env.PORT || 1979;

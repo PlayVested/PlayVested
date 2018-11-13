@@ -6,7 +6,6 @@ const { canEditCharity } = require('../middleware/charity');
 const Charity = require('../models/charity');
 
 // 'index' route
-// no reason to view all users on their own, redirect to home page
 router.get('/', (req, res) => {
     res.render('charities/index');
 });
@@ -20,11 +19,13 @@ router.get('/new', (req, res) => {
 router.post('/', (req, res) => {
     const newCharity = {
         organizationName: req.body.name,
-        contact: {
-            email: req.body.email,
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-        },
+        phoneNumber: req.body.phoneNumber,
+        address: req.body.address,
+        city: req.body.city,
+        state: req.body.state,
+        zipcode: req.body.zipcode,
+        taxID: req.body.taxID,
+        ownerID: res.locals.user._id,
     };
 
     Charity.create(newCharity, (err, createdCharity) => {

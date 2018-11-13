@@ -1,14 +1,13 @@
 const mongoose = require('mongoose');
 const passportLocalMongoose = require('passport-local-mongoose');
 
-const CharitySchema = new mongoose.Schema({
-    organizationName: String,
+const GameSchema = new mongoose.Schema({
+    companyName: String,
     phoneNumber: String,
     address: String,
     city: String,
     state: String,
     zipcode: String,
-    taxID: String,
     ownerID: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
@@ -18,6 +17,6 @@ const CharitySchema = new mongoose.Schema({
   timestamps: true
 });
 
-CharitySchema.plugin(passportLocalMongoose);
+GameSchema.plugin(passportLocalMongoose);
 
-module.exports = mongoose.model("Charity", CharitySchema);
+module.exports = mongoose.model("Game", GameSchema);
