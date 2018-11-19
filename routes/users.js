@@ -3,6 +3,7 @@ const router = express.Router({mergeParams: true});
 
 const isLoggedIn = require('../middleware/isLoggedIn');
 
+const Donation = require('../models/donation');
 const User = require('../models/user');
 
 // 'index' route
@@ -17,9 +18,50 @@ router.get('/new', (req, res) => {
 });
 
 // 'create' route
+// this is called by games to create a new user
 router.post('/', (req, res) => {
-    req.flash(`error`, `Error, use /register post route instead`);
-    return res.redirect('back');
+    // TODO: add authentication
+    //       make sure the request is coming from a verified game
+    if (req.isAuthenticated()) {
+        req.flash(`error`, `Error, use /register post route instead`);
+        return res.redirect('back');
+        }
+
+    const newUser = {
+        username: req.body.username,
+        email: req.body.email,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        friends: [],
+    };
+
+    User.create(newUser, (err, createdUser) => {
+        if (err) {
+            console.error(`Error: ${err.message}`);
+            res.status(400);
+            res.send('Failed to create user');
+            return;
+        } else {
+            const newDonation = {
+                userID: createdUser._id,
+                charityID: req.body.charityID,
+                percentage: 100,
+            };
+
+            Donation.create(newDonation, (err, createdDonation) => {
+                if (err) {
+                    console.error(`Error: ${err.message}`);
+                    res.status(400);
+                    res.send('Failed to create donation');
+                    return;
+                } else {
+                    console.log('Created: ' + createdDonation);
+                    res.status(200);
+                    res.send(createdUser._id);
+                }
+            });
+        }
+    });
 });
 
 // 'show' route

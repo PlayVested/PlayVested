@@ -10,18 +10,45 @@ const Record = require('../models/record');
 //     res.render('records/index');
 // });
 
-// 'new' route
-// router.get('/new', (req, res) => {
-//     res.render('records/new');
-// });
+// 'total' route
+router.get('/total', (req, res) => {
+    const searchParams = {
+        userID: req.body.userID,
+        gameID: req.body.gameID,
+    };
+
+    Record.find(searchParams, (err, foundRecords) => {
+        if (err) {
+            console.error(`Error: ${err.message}`);
+            res.status(400);
+            res.send('Failed to create user');
+            return;
+        } else {
+            // TODO: authenticate game
+            // pull info about the user
+            const reducer = (accumulator, currentValue) => accumulator + currentValue;
+            const total = foundRecords.reduce(reducer);
+            res.status(200);
+            res.send(total);
+            return;
+        }
+    });
+});
 
 // 'create' route
 router.post('/', (req, res) => {
+    // TODO: add authentication (user logged in or validated game)
     const newRecord = {
-        userID: res.locals.user._id,
+        userID: req.body.userID || res.locals.user._id,
         gameID: req.body.gameID,
         amountEarned: req.body.amountEarned,
     };
+
+    if (!newRecord.user || !newRecord.gameID) {
+        res.status(400);
+        res.send('None shall pass');
+        return;
+    }
 
     Record.create(newRecord, (err, createdRecord) => {
         if (err) {
@@ -29,8 +56,13 @@ router.post('/', (req, res) => {
             req.flash(`error`, `Error creating record: ${err.message}`);
         } else {
             console.log('Created: ' + createdRecord);
-            req.flash(`success`, `Successfully created record!`);
-            res.redirect(`/records/${createdRecord._id}`);
+            if (req.isAuthenticated()) {
+                req.flash(`success`, `Successfully created record!`);
+                res.redirect(`/records/${createdRecord._id}`);
+            } else {
+                res.status(200);
+                res.send('Success');
+            }
         }
     });
 });
