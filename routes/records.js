@@ -46,7 +46,7 @@ router.post('/', (req, res) => {
 
     if (!newRecord.user || !newRecord.gameID) {
         res.status(400);
-        res.send('None shall pass');
+        res.send('Invalid input data');
         return;
     }
 

@@ -3,20 +3,30 @@ const Game = require(`./models/game`);
 const User = require(`./models/user`);
 
 // Static dummy data used to populate the DB if it is empty
-const defualtUsers = [
+const defaultUsers = [
     {
-        _id: '1234567890',
         username: 'Becca',
         email: `becca@unitedway.com`,
         firstName: `Becca`,
         lastName: `Guyette`,
     },
     {
-        _id: '0987654321',
         username: 'Randall',
         email: `randall_summit@usc.salvationarmy.org`,
         firstName: `Randall`,
         lastName: `Summit`,
+    },
+    {
+        username: 'Theringer',
+        email: `theringer@backflip.com`,
+        firstName: `Tod`,
+        lastName: `Ringer`,
+    },
+    {
+        username: 'LukeSkywalker',
+        email: `luke@radiangames.com`,
+        firstName: `Luke`,
+        lastName: `Schnider`,
     },
 ];
 
@@ -29,7 +39,6 @@ const defaultCharities = [
         state: `IL`,
         zipcode: `61820`,
         taxID: `1234`,
-        ownerID: '1234567890',
     },
     {
         organizationName: `Salvation Army`,
@@ -39,7 +48,6 @@ const defaultCharities = [
         state: `IL`,
         zipcode: `61821`,
         taxID: `5678`,
-        ownerID: '0987654321',
     },
 ];
 
@@ -51,7 +59,6 @@ const defaultGames = [
         city: `Porkshank`,
         state: `MD`,
         zipcode: `18273`,
-        ownerID: `102938`,
     },
     {
         companyName: `Monkey Time`,
@@ -60,58 +67,111 @@ const defaultGames = [
         city: `Mooreplank`,
         state: `TN`,
         zipcode: `89374`,
-        ownerID: `58490234`,
     }
 ];
 
-async function createUser(user) {
-    User.create(user, (err, newCharity) => {
-        if (err) {
-            console.error(`Error: ${err}`);
-        } else {
-            console.error(`Created: ${newUser}`);
-        }
+function createUser(user) {
+    return new Promise((resolve, reject) => {
+        User.create(user, (err, newUser) => {
+            if (err) {
+                console.error(`Error creating user: ${err}`);
+                reject();
+            } else {
+                console.error(`Created: ${newUser}`);
+                resolve(newUser);
+            }
+        });
     });
 }
 
-async function createCharity(charity) {
-    Charity.create(charity, (err, newCharity) => {
-        if (err) {
-            console.error(`Error: ${err}`);
-        } else {
-            console.error(`Created: ${newCharity}`);
-        }
+function createCharity(charity, ownerID) {
+    return new Promise((resolve, reject) => {
+        charity.ownerID = ownerID;
+        Charity.create(charity, (err, newCharity) => {
+            if (err) {
+                console.error(`Error creating charity: ${err}`);
+                reject();
+            } else {
+                console.error(`Created: ${newCharity}`);
+                resolve(newCharity);
+            }
+        });
     });
 }
 
-async function createGame(game) {
-    Game.create(game, (err, newGame) => {
-        if (err) {
-            console.error(`Error: ${err}`);
-        } else {
-            console.error(`Created: ${newGame}`);
-        }
+function createGame(game, ownerID) {
+    return new Promise((resolve, reject) => {
+        game.ownerID = ownerID;
+        Game.create(game, (err, newGame) => {
+            if (err) {
+                console.error(`Error creating game: ${err}`);
+                reject();
+            } else {
+                console.error(`Created: ${newGame}`);
+                resolve(newGame);
+            }
+        });
     });
 }
 
 function wipeDBs() {
-    Charity.remove({}, (err) => {
-        console.log(`All charities have been removed`);
+    const promises = [
+        new Promise((resolve, reject) => {
+            User.remove({}, (err) => {
+                if (err) {
+                    console.error(`Error wiping users: ${err}`);
+                    reject();
+                } else {
+                    console.log(`All users have been removed`);
+                    resolve();
+                }
+            });
+        }),
+        new Promise((resolve, reject) => {
+            Charity.remove({}, (err) => {
+                if (err) {
+                    console.error(`Error wiping charities: ${err}`);
+                    reject();
+                } else {
+                    console.log(`All charities have been removed`);
+                    resolve();
+                }
+            });
+        }),
+        new Promise((resolve, reject) => {
+            Game.remove({}, (err) => {
+                if (err) {
+                    console.error(`Error wiping games: ${err}`);
+                    reject();
+                } else {
+                    console.log(`All games have been removed`);
+                    resolve();
+                }
+            });
+        }),
+    ];
+
+    return Promise.all(promises).then(() => {;
+        console.log(`All DBs wiped`);
     });
 }
 
 // if there is nothing in the DB, populate it with a couple enrties
-module.exports = () => {
+module.exports = async () => {
     // uncomment this if you want to clear the DB first
-    wipeDBs();
+    await wipeDBs();
 
-    User.find({}, (err, users) => {
+    // have to wait for users to get created before moving on
+    // since we reference the IDs in the other test data
+    await User.find({}, (err, users) => {
         if (err) {
-            console.error(`Error: ${err}`);
+            console.error(`Error creating users: ${err}`);
         } else if (users.length === 0) {
             console.log(`Createing default users`);
-            defualtUsers.forEach((user) => {
-                createUser(user);
+            defaultUsers.forEach(async (user, idx) => {
+                await createUser(user).then((newUser) => {
+                    defaultUsers[idx] = newUser;
+                });
             });
         } else {
             console.log(`There is already charity data`);
@@ -120,11 +180,14 @@ module.exports = () => {
 
     Charity.find({}, (err, charities) => {
         if (err) {
-            console.error(`Error: ${err}`);
+            console.error(`Error creating charities: ${err}`);
         } else if (charities.length === 0) {
             console.log(`Createing default charities`);
-            defaultCharities.forEach((charity) => {
-                createCharity(charity);
+            defaultCharities.forEach((charity, idx) => {
+                const ownerID = [defaultUsers[idx]._id];
+                createCharity(charity, ownerID).then((newCharity) => {
+                    defaultCharities[idx] = newCharity;
+                });
             });
         } else {
             console.log(`There is already charity data`);
@@ -133,11 +196,15 @@ module.exports = () => {
 
     Game.find({}, (err, games) => {
         if (err) {
-            console.error(`Error: ${err}`);
+            console.error(`Error creating games: ${err}`);
         } else if (games.length === 0) {
             console.log(`Createing default games`);
-            defaultGames.forEach((game) => {
-                createGame(game);
+            const baseIdx = defaultCharities.length;
+            defaultGames.forEach((game, idx) => {
+                const ownerID = [defaultUsers[baseIdx + idx]._id];
+                createGame(game, ownerID).then((newGame) => {
+                    defaultGames[idx] = newGame;
+                });
             });
         } else {
             console.log(`There is already game data`);
