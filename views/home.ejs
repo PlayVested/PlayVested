@@ -1,13 +1,11 @@
 <% include ./partials/header %>
 
-    <h2>Helping you enjoy your next meal</h2> 
+    <h2>Gaming for Good</h2> 
 
-    <a class="btn btn-block btn-primary" href="/restaurants">Restaurants</a></li>
+    <a class="btn btn-block btn-primary" href="/games">Games</a></li>
+    <a class="btn btn-block btn-primary" href="/charities">Charities</a></li>
     <% if (user) { %>
-        <a class="btn btn-block btn-primary" href="/users/<%= user._id %>">Friends</a>
-        <a class="btn btn-block btn-primary" href="/lists">Lists</a>
+        <a class="btn btn-block btn-primary" href="/users/<%= user._id %>">Account Info</a>
     <% } %>
-
-    <% include ./partials/recommendList %>
 
 <% include ./partials/footer %>
