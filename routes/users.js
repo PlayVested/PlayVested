@@ -25,7 +25,7 @@ router.post('/', (req, res) => {
     if (req.isAuthenticated()) {
         req.flash(`error`, `Error, use /register post route instead`);
         return res.redirect('back');
-        }
+    }
 
     const newUser = {
         username: req.body.username,
@@ -44,6 +44,7 @@ router.post('/', (req, res) => {
         } else {
             const newDonation = {
                 userID: createdUser._id,
+                username: '' + createdUser._id, // TODO: remove this
                 charityID: req.body.charityID,
                 percentage: 100,
             };

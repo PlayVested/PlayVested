@@ -87,6 +87,7 @@ function createUser(user) {
 function createCharity(charity, ownerID) {
     return new Promise((resolve, reject) => {
         charity.ownerID = ownerID;
+        charity.username = '' + ownerID[0]; // TODO: Figure out why this is required, replace with another field
         Charity.create(charity, (err, newCharity) => {
             if (err) {
                 console.error(`Error creating charity: ${err}`);
@@ -102,6 +103,7 @@ function createCharity(charity, ownerID) {
 function createGame(game, ownerID) {
     return new Promise((resolve, reject) => {
         game.ownerID = ownerID;
+        game.username = '' + ownerID[0]; // TODO: Figure out why this is required, replace with another field
         Game.create(game, (err, newGame) => {
             if (err) {
                 console.error(`Error creating game: ${err}`);
@@ -159,7 +161,7 @@ function wipeDBs() {
 // if there is nothing in the DB, populate it with a couple enrties
 module.exports = async () => {
     // uncomment this if you want to clear the DB first
-    await wipeDBs();
+    // await wipeDBs();
 
     // have to wait for users to get created before moving on
     // since we reference the IDs in the other test data
