@@ -28,14 +28,16 @@ router.post('/', (req, res) => {
         return res.redirect('back');
     }
 
-    console.log(`Looking for ${req.body.charityName}`);
-    Charity.find({organizationName: req.body.charityName}, (err, foundCharity) => {
-        if (err) {
+    console.log(`Looking for ${req.body.charityID}`);
+    Charity.findById(req.body.charityID, (err, foundCharity) => {
+        if (err || !foundCharity) {
             console.error(`Error: ${err.message}`);
             res.status(400);
             res.send('Failed to find the charity');
             return;
         } else {
+            console.log(`Found Charity: ${foundCharity}`);
+
             const newUser = {
                 username: req.body.username,
                 email: req.body.email,
@@ -51,10 +53,12 @@ router.post('/', (req, res) => {
                     res.send('Failed to create user');
                     return;
                 } else {
+                    console.log('Created User: ' + createdUser);
+
                     const newDonation = {
                         userID: createdUser._id,
                         username: '' + createdUser._id, // TODO: remove this
-                        charityID: foundCharity.charityID,
+                        charityID: foundCharity._id,
                         percentage: 100,
                     };
 
@@ -65,7 +69,7 @@ router.post('/', (req, res) => {
                             res.send('Failed to create donation');
                             return;
                         } else {
-                            console.log('Created: ' + createdDonation);
+                            console.log('Created Donation: ' + createdDonation);
                             res.status(200);
                             res.send(createdUser._id);
                         }

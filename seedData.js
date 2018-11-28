@@ -93,7 +93,7 @@ function createUser(user) {
                 console.error(`Error creating user: ${err}`);
                 reject();
             } else {
-                console.error(`Created: ${newUser}`);
+                console.error(`Created User: ${newUser}`);
                 resolve(newUser);
             }
         });
@@ -110,7 +110,7 @@ function createCharity(charity, idx) {
                 console.error(`Error creating charity: ${err}`);
                 reject();
             } else {
-                console.error(`Created: ${newCharity}`);
+                console.error(`Created Charity: ${newCharity}`);
                 resolve(newCharity);
             }
         });
@@ -128,7 +128,7 @@ function createDeveloper(developer, idx) {
                 console.error(`Error creating developer: ${err}`);
                 reject();
             } else {
-                console.error(`Created: ${newDeveloper}`);
+                console.error(`Created Developer: ${newDeveloper}`);
                 resolve(newDeveloper);
             }
         });
@@ -145,7 +145,7 @@ function createGame(game, idx) {
                 console.error(`Error creating game: ${err}`);
                 reject();
             } else {
-                console.error(`Created: ${newGame}`);
+                console.error(`Created Game: ${newGame}`);
                 resolve(newGame);
             }
         });
@@ -201,7 +201,7 @@ function seedDB(db, name, defaultObjs, createFunc) {
                 });
             } else {
                 console.log(`There is already ${name} data`);
-                reject();
+                resolve();
             }
         });
     });
