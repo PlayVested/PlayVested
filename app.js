@@ -46,11 +46,11 @@ passport.deserializeUser(User.deserializeUser());
 app.use(bodyParser.urlencoded({extended: true}));
 
 // fall back on a local DB if one isn't provided through an env variable
-// const dbURL = process.env.DATABASEURL || 'mongodb://localhost/PlayVested';
-// mongoose.connect(dbURL, { useNewUrlParser: true }); // add ':27017' to the address if it needs a port
+const dbURL = process.env.DATABASEURL || 'mongodb://localhost/PlayVested';
+mongoose.connect(dbURL, { useNewUrlParser: true }); // add ':27017' to the address if it needs a port
 
 // maybe populate the DB with some starting data
-// seedData();
+seedData();
 
 // this will inject the signed in user to all pages
 // so we can reference it on any page

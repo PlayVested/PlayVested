@@ -2,16 +2,11 @@ const mongoose = require('mongoose');
 const passportLocalMongoose = require('passport-local-mongoose');
 
 const GameSchema = new mongoose.Schema({
-    companyName: String,
-    phoneNumber: String,
-    address: String,
-    city: String,
-    state: String,
-    zipcode: String,
-    ownerID: [{
+    name: String,
+    devID: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    }],
+        ref: "Developer"
+    },
 },
 {
   timestamps: true

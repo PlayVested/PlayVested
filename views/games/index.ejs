@@ -1,0 +1,23 @@
+<% include ../partials/header %>
+
+    <h1>This is the game index page</h1>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <ul>
+            <% games.forEach((game) => { %>
+                <li>
+                    <a href="/games/<%= game._id %>">
+                        <%= game.name %>
+                    </a>
+                </li>
+            <% }); %>
+            </ul>
+
+            <% if (user) { %>
+                <a href="/games/new" class="btn btn-lg btn-primary">Add Game</a>
+            <% } %>
+        </div>
+    </div>
+
+<% include ../partials/footer %>

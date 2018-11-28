@@ -7,7 +7,14 @@ const Game = require('../models/game');
 
 // 'index' route
 router.get('/', (req, res) => {
-    res.render('games/index');
+    Game.find({}, (err, games) => {
+        if (err) {
+            console.error(`Error getting games: ${err.message}`);
+            res.redirect('/');
+        } else {
+            res.render('games/index', { games });
+        }
+    });
 });
 
 // 'new' route

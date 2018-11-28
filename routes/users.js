@@ -3,6 +3,7 @@ const router = express.Router({mergeParams: true});
 
 const isLoggedIn = require('../middleware/isLoggedIn');
 
+const Charity = require('../models/charity');
 const Donation = require('../models/donation');
 const User = require('../models/user');
 
@@ -27,38 +28,48 @@ router.post('/', (req, res) => {
         return res.redirect('back');
     }
 
-    const newUser = {
-        username: req.body.username,
-        email: req.body.email,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        friends: [],
-    };
-
-    User.create(newUser, (err, createdUser) => {
+    console.log(`Looking for ${req.body.charityName}`);
+    Charity.find({organizationName: req.body.charityName}, (err, foundCharity) => {
         if (err) {
             console.error(`Error: ${err.message}`);
             res.status(400);
-            res.send('Failed to create user');
+            res.send('Failed to find the charity');
             return;
         } else {
-            const newDonation = {
-                userID: createdUser._id,
-                username: '' + createdUser._id, // TODO: remove this
-                charityID: req.body.charityID,
-                percentage: 100,
+            const newUser = {
+                username: req.body.username,
+                email: req.body.email,
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                friends: [],
             };
 
-            Donation.create(newDonation, (err, createdDonation) => {
+            User.create(newUser, (err, createdUser) => {
                 if (err) {
                     console.error(`Error: ${err.message}`);
                     res.status(400);
-                    res.send('Failed to create donation');
+                    res.send('Failed to create user');
                     return;
                 } else {
-                    console.log('Created: ' + createdDonation);
-                    res.status(200);
-                    res.send(createdUser._id);
+                    const newDonation = {
+                        userID: createdUser._id,
+                        username: '' + createdUser._id, // TODO: remove this
+                        charityID: foundCharity.charityID,
+                        percentage: 100,
+                    };
+
+                    Donation.create(newDonation, (err, createdDonation) => {
+                        if (err) {
+                            console.error(`Error: ${err.message}`);
+                            res.status(400);
+                            res.send('Failed to create donation');
+                            return;
+                        } else {
+                            console.log('Created: ' + createdDonation);
+                            res.status(200);
+                            res.send(createdUser._id);
+                        }
+                    });
                 }
             });
         }

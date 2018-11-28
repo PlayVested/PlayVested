@@ -1,4 +1,5 @@
 const Charity = require(`./models/charity`);
+const Developer = require(`./models/devolper`);
 const Game = require(`./models/game`);
 const User = require(`./models/user`);
 
@@ -51,7 +52,7 @@ const defaultCharities = [
     },
 ];
 
-const defaultGames = [
+const defaultDevelopers = [
     {
         companyName: `Banaland Games`,
         phoneNumber: `555-192-8374`,
@@ -70,6 +71,21 @@ const defaultGames = [
     }
 ];
 
+const defaultGames = [
+    {
+        name: `Endless Bananas`,
+    },
+    {
+        name: `Banana Crush`,
+    },
+    {
+        name: `The Flinger`,
+    },
+    {
+        name: `My Little Monkey`,
+    },
+];
+
 function createUser(user) {
     return new Promise((resolve, reject) => {
         User.create(user, (err, newUser) => {
@@ -84,8 +100,9 @@ function createUser(user) {
     });
 }
 
-function createCharity(charity, ownerID) {
+function createCharity(charity, idx) {
     return new Promise((resolve, reject) => {
+        const ownerID = [defaultUsers[idx]._id];
         charity.ownerID = ownerID;
         charity.username = '' + ownerID[0]; // TODO: Figure out why this is required, replace with another field
         Charity.create(charity, (err, newCharity) => {
@@ -100,10 +117,29 @@ function createCharity(charity, ownerID) {
     });
 }
 
-function createGame(game, ownerID) {
+function createDeveloper(developer, idx) {
     return new Promise((resolve, reject) => {
-        game.ownerID = ownerID;
-        game.username = '' + ownerID[0]; // TODO: Figure out why this is required, replace with another field
+        const baseIdx = defaultCharities.length;
+        const ownerID = [defaultUsers[baseIdx + idx]._id];
+        developer.ownerID = ownerID;
+        developer.username = '' + ownerID[0]; // TODO: Figure out why this is required, replace with another field
+        Developer.create(developer, (err, newDeveloper) => {
+            if (err) {
+                console.error(`Error creating developer: ${err}`);
+                reject();
+            } else {
+                console.error(`Created: ${newDeveloper}`);
+                resolve(newDeveloper);
+            }
+        });
+    });
+}
+
+function createGame(game, idx) {
+    return new Promise((resolve, reject) => {
+        const devID = defaultDevelopers[Math.floor(idx / 2)]._id;
+        game.devID = devID;
+        game.username = game.name; // TODO: Figure out why this is required, replace with another field
         Game.create(game, (err, newGame) => {
             if (err) {
                 console.error(`Error creating game: ${err}`);
@@ -116,45 +152,58 @@ function createGame(game, ownerID) {
     });
 }
 
+function wipeHelper(db, name) {
+    return new Promise((resolve, reject) => {
+        db.remove({}, (err) => {
+            if (err) {
+                console.error(`Error wiping ${name}: ${err}`);
+                reject();
+            } else {
+                console.log(`All ${name} have been removed`);
+                resolve();
+            }
+        });
+    });
+}
+
 function wipeDBs() {
     const promises = [
-        new Promise((resolve, reject) => {
-            User.remove({}, (err) => {
-                if (err) {
-                    console.error(`Error wiping users: ${err}`);
-                    reject();
-                } else {
-                    console.log(`All users have been removed`);
-                    resolve();
-                }
-            });
-        }),
-        new Promise((resolve, reject) => {
-            Charity.remove({}, (err) => {
-                if (err) {
-                    console.error(`Error wiping charities: ${err}`);
-                    reject();
-                } else {
-                    console.log(`All charities have been removed`);
-                    resolve();
-                }
-            });
-        }),
-        new Promise((resolve, reject) => {
-            Game.remove({}, (err) => {
-                if (err) {
-                    console.error(`Error wiping games: ${err}`);
-                    reject();
-                } else {
-                    console.log(`All games have been removed`);
-                    resolve();
-                }
-            });
-        }),
+        wipeHelper(User, 'users'),
+        wipeHelper(Charity, 'charities'),
+        wipeHelper(Developer, 'developers'),
+        wipeHelper(Game, 'games'),
     ];
 
     return Promise.all(promises).then(() => {;
         console.log(`All DBs wiped`);
+    });
+}
+
+function seedDB(db, name, defaultObjs, createFunc) {
+    return new Promise((resolve, reject) => {
+        db.find({}, (err, objs) => {
+            if (err) {
+                console.error(`Error creating ${name}: ${err}`);
+                reject();
+            } else if (objs.length === 0) {
+                console.log(`\nCreating default ${name}`);
+                let promises = [];
+                defaultObjs.forEach(async (obj, idx) => {
+                    promises.push(
+                        createFunc(obj, idx).then((newObj) => {
+                            defaultObjs[idx] = newObj;
+                        })
+                    );
+                });
+
+                Promise.all(promises).then(() => {
+                    resolve();
+                });
+            } else {
+                console.log(`There is already ${name} data`);
+                reject();
+            }
+        });
     });
 }
 
@@ -164,52 +213,11 @@ module.exports = async () => {
     // await wipeDBs();
 
     // have to wait for users to get created before moving on
-    // since we reference the IDs in the other test data
-    await User.find({}, (err, users) => {
-        if (err) {
-            console.error(`Error creating users: ${err}`);
-        } else if (users.length === 0) {
-            console.log(`Createing default users`);
-            defaultUsers.forEach(async (user, idx) => {
-                await createUser(user).then((newUser) => {
-                    defaultUsers[idx] = newUser;
-                });
-            });
-        } else {
-            console.log(`There is already charity data`);
-        }
-    });
+    // since we reference the IDs in charities and developers
+    await seedDB(User, 'users', defaultUsers, createUser);
+    await seedDB(Charity, 'charities', defaultCharities, createCharity);
+    await seedDB(Developer, 'developers', defaultDevelopers, createDeveloper);
 
-    Charity.find({}, (err, charities) => {
-        if (err) {
-            console.error(`Error creating charities: ${err}`);
-        } else if (charities.length === 0) {
-            console.log(`Createing default charities`);
-            defaultCharities.forEach((charity, idx) => {
-                const ownerID = [defaultUsers[idx]._id];
-                createCharity(charity, ownerID).then((newCharity) => {
-                    defaultCharities[idx] = newCharity;
-                });
-            });
-        } else {
-            console.log(`There is already charity data`);
-        }
-    });
-
-    Game.find({}, (err, games) => {
-        if (err) {
-            console.error(`Error creating games: ${err}`);
-        } else if (games.length === 0) {
-            console.log(`Createing default games`);
-            const baseIdx = defaultCharities.length;
-            defaultGames.forEach((game, idx) => {
-                const ownerID = [defaultUsers[baseIdx + idx]._id];
-                createGame(game, ownerID).then((newGame) => {
-                    defaultGames[idx] = newGame;
-                });
-            });
-        } else {
-            console.log(`There is already game data`);
-        }
-    });
+    // games must come after developers
+    await seedDB(Game, 'games', defaultGames, createGame);
 };
