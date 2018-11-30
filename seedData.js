@@ -33,6 +33,7 @@ const defaultUsers = [
 
 const defaultCharities = [
     {
+        _id: `5bfe16cd351c7e5cf4b9f9a0`,
         organizationName: `United Way`,
         phoneNumber: '555-123-4567',
         address: `123 Whatever St`,
@@ -42,6 +43,7 @@ const defaultCharities = [
         taxID: `1234`,
     },
     {
+        _id: `5bfe16cd351c7e5cf4b9f9a1`,
         organizationName: `Salvation Army`,
         phoneNumber: '555-987-6543',
         address: `321 Downtown St`,
@@ -73,15 +75,19 @@ const defaultDevelopers = [
 
 const defaultGames = [
     {
+        _id: `5c00a8b7f9bf974de030b429`,
         name: `Endless Bananas`,
     },
     {
+        _id: `5c00a8b7f9bf974de030b42a`,
         name: `Banana Crush`,
     },
     {
+        _id: `5c00a8b7f9bf974de030b42b`,
         name: `The Flinger`,
     },
     {
+        _id: `5c00a8b7f9bf974de030b42c`,
         name: `My Little Monkey`,
     },
 ];
