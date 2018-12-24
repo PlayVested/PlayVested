@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const passportLocalMongoose = require('passport-local-mongoose');
 
 const DonationSchema = new mongoose.Schema({
     userID: {
@@ -15,7 +14,5 @@ const DonationSchema = new mongoose.Schema({
 {
   timestamps: true
 });
-
-DonationSchema.plugin(passportLocalMongoose);
 
 module.exports = mongoose.model("Donation", DonationSchema);

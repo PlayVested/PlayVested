@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const passportLocalMongoose = require('passport-local-mongoose');
 
 const GameSchema = new mongoose.Schema({
     name: String,
@@ -11,7 +10,5 @@ const GameSchema = new mongoose.Schema({
 {
   timestamps: true
 });
-
-GameSchema.plugin(passportLocalMongoose);
 
 module.exports = mongoose.model("Game", GameSchema);

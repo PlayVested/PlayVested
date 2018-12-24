@@ -110,7 +110,6 @@ function createCharity(charity, idx) {
     return new Promise((resolve, reject) => {
         const ownerID = [defaultUsers[idx]._id];
         charity.ownerID = ownerID;
-        charity.username = '' + ownerID[0]; // TODO: Figure out why this is required, replace with another field
         Charity.create(charity, (err, newCharity) => {
             if (err) {
                 console.error(`Error creating charity: ${err}`);
@@ -128,7 +127,6 @@ function createDeveloper(developer, idx) {
         const baseIdx = defaultCharities.length;
         const ownerID = [defaultUsers[baseIdx + idx]._id];
         developer.ownerID = ownerID;
-        developer.username = '' + ownerID[0]; // TODO: Figure out why this is required, replace with another field
         Developer.create(developer, (err, newDeveloper) => {
             if (err) {
                 console.error(`Error creating developer: ${err}`);
@@ -145,7 +143,6 @@ function createGame(game, idx) {
     return new Promise((resolve, reject) => {
         const devID = defaultDevelopers[Math.floor(idx / 2)]._id;
         game.devID = devID;
-        game.username = game.name; // TODO: Figure out why this is required, replace with another field
         Game.create(game, (err, newGame) => {
             if (err) {
                 console.error(`Error creating game: ${err}`);

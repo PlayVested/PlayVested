@@ -70,7 +70,6 @@ router.post('/', (req, res) => {
                         // finally, create the donation info and link it to the user
                         const newDonation = {
                             userID: createdUser._id,
-                            username: '' + createdUser._id, // TODO: remove this
                             charityID: foundCharity._id,
                             percentage: 100,
                         };
@@ -84,7 +83,7 @@ router.post('/', (req, res) => {
                             } else {
                                 console.log('Created Donation: ' + createdDonation);
                                 res.status(200);
-                                res.send(createdUser._id);
+                                res.send(String(createdUser._id));
                             }
                         });
                     }

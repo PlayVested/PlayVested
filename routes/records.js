@@ -43,7 +43,6 @@ router.post('/', (req, res) => {
         gameID: req.body.gameID,
         amountEarned: req.body.amountEarned,
     };
-    newRecord.username = newRecord.userID; // TODO: remove this
 
     if (!newRecord.userID || !newRecord.gameID) {
         res.status(400);

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const passportLocalMongoose = require('passport-local-mongoose');
 
 const CharitySchema = new mongoose.Schema({
     organizationName: String,
@@ -17,7 +16,5 @@ const CharitySchema = new mongoose.Schema({
 {
   timestamps: true
 });
-
-CharitySchema.plugin(passportLocalMongoose);
 
 module.exports = mongoose.model("Charity", CharitySchema);
