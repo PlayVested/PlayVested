@@ -11,11 +11,22 @@ const Record = require('../models/record');
 // });
 
 // 'total' route
-router.get('/total', (req, res) => {
-    const searchParams = {
-        userID: req.body.userID,
-        gameID: req.body.gameID,
-    };
+router.get('/total/:gameID', (req, res) => {
+    // this can be called for a user and/or game
+    let searchParams = {};
+    if (req.query.userID) {
+        searchParams.userID = req.query.userID;
+    }
+    if (req.query.gameID) {
+        searchParams.gameID = req.query.gameID;
+    }
+
+    // make sure something was specified
+    if (searchParams == {}) {
+        res.status(400);
+        res.send(`User or game is required`);
+        return;
+    }
 
     Record.find(searchParams, (err, foundRecords) => {
         if (err) {
@@ -23,15 +34,38 @@ router.get('/total', (req, res) => {
             res.status(400);
             res.send('Failed to create user');
             return;
-        } else {
-            // TODO: authenticate game
-            // pull info about the user
-            const reducer = (accumulator, currentValue) => accumulator + currentValue;
-            const total = foundRecords.reduce(reducer);
+        } else if (foundRecords.length) {
+            // support filtering out by date
+            let totals = {
+                lifetime: 0,
+            };
+
+            var filteredDate = new Date();
+            if (req.query.previousDays || req.query.previousWeeks || req.query.previousMonths) {
+                totals.filtered = 0;
+                if (req.query.previousDays) {
+                    filteredDate.setDate(filteredDate.getDate() - req.query.previousDays);
+                } else if (req.query.previousWeeks) {
+                    filteredDate.setDate(filteredDate.getDate() - req.query.previousWeeks * 7);
+                } else if (req.query.previousMonths) {
+                    filteredDate.setMonth(filteredDate.getMonth() - req.query.previousMonths);
+                }
+            }
+
+            foundRecords.forEach((record) => {
+                totals.lifetime += record.amountEarned;
+                if (record.createdAt >= filteredDate) {
+                    totals.filtered += record.amountEarned;
+                }
+            });
+
             res.status(200);
-            res.send(total);
+            res.send(totals);
             return;
         }
+
+        res.status(404);
+        res.send('Failed to find records');
     });
 });
 
