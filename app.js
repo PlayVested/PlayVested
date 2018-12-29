@@ -16,6 +16,7 @@ const charitiesRoutes = require('./routes/charities');
 const indexRoutes = require('./routes/index');
 const donationRoutes = require('./routes/donations');
 const gameRoutes = require('./routes/games');
+const playerRoutes = require('./routes/player');
 const recordRoutes = require('./routes/records');
 const userRoutes = require('./routes/users');
 
@@ -75,6 +76,7 @@ app.use('/', indexRoutes);
 app.use('/charities', charitiesRoutes);
 app.use('/donations', donationRoutes);
 app.use('/games', gameRoutes);
+app.use('/players', playerRoutes);
 app.use('/records', recordRoutes);
 app.use('/users', userRoutes);
 

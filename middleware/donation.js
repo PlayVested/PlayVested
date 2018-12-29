@@ -20,14 +20,14 @@ module.exports = {
     },
 
     /**
-     * Passes if there is a valid user,
+     * Passes if there is a valid player,
      * and the donation referenced in req is found
      */
     canEditDonation: (req, res, next) => {
         isLoggedIn(req, res, () => {
             module.exports.cacheDonation(req, res, () => {
                 const { donation } = res.locals;
-                if (donation && res.locals.user._id.equals(donation.userID)) {
+                if (donation && res.locals.player._id.equals(donation.playerID)) {
                     return next();
                 }
 

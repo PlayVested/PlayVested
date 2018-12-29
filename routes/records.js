@@ -12,10 +12,10 @@ const Record = require('../models/record');
 
 // 'total' route
 router.get('/total', (req, res) => {
-    // this can be called for a user and/or game
+    // this can be called for a player and/or game
     let searchParams = {};
-    if (req.query.userID) {
-        searchParams.userID = req.query.userID;
+    if (req.query.playerID) {
+        searchParams.playerID = req.query.playerID;
     }
     if (req.query.gameID) {
         searchParams.gameID = req.query.gameID;
@@ -24,7 +24,7 @@ router.get('/total', (req, res) => {
     // make sure something was specified
     if (Object.keys(searchParams).length === 0) {
         res.status(400);
-        res.send(`User or game is required`);
+        res.send(`Player or game is required`);
         return;
     }
 
@@ -32,7 +32,7 @@ router.get('/total', (req, res) => {
         if (err) {
             console.error(`Error: ${err.message}`);
             res.status(400);
-            res.send('Failed to create user');
+            res.send('Error running query');
             return;
         } else if (foundRecords.length) {
             // support filtering out by date
@@ -71,14 +71,14 @@ router.get('/total', (req, res) => {
 
 // 'create' route
 router.post('/', (req, res) => {
-    // TODO: add authentication (user logged in or validated game)
+    // TODO: add authentication (validated game and player)
     const newRecord = {
-        userID: req.body.userID || res.locals.user._id,
+        playerID: req.body.playerID,
         gameID: req.body.gameID,
         amountEarned: req.body.amountEarned,
     };
 
-    if (!newRecord.userID || !newRecord.gameID) {
+    if (!newRecord.playerID || !newRecord.gameID) {
         res.status(400);
         res.send('Invalid input data');
         return;
@@ -95,7 +95,10 @@ router.post('/', (req, res) => {
                 res.redirect(`/records/${createdRecord._id}`);
             } else {
                 res.status(200);
-                res.send('Success');
+                res.send({
+                    amountEarned: createdRecord.amountEarned,
+                    status: 'Success'
+                });
             }
         }
     });

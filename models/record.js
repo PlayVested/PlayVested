@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
-const passportLocalMongoose = require('passport-local-mongoose');
 
 const RecordSchema = new mongoose.Schema({
-    userID: {
+    playerID: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: "Player"
     },
     gameID: {
         type: mongoose.Schema.Types.ObjectId,
@@ -15,7 +14,5 @@ const RecordSchema = new mongoose.Schema({
 {
   timestamps: true
 });
-
-RecordSchema.plugin(passportLocalMongoose);
 
 module.exports = mongoose.model("Record", RecordSchema);

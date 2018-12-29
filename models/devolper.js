@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const passportLocalMongoose = require('passport-local-mongoose');
 
 const DeveloperSchema = new mongoose.Schema({
     companyName: String,
@@ -16,7 +15,5 @@ const DeveloperSchema = new mongoose.Schema({
 {
   timestamps: true
 });
-
-DeveloperSchema.plugin(passportLocalMongoose);
 
 module.exports = mongoose.model("Developer", DeveloperSchema);

@@ -27,8 +27,12 @@ module.exports = {
         isLoggedIn(req, res, () => {
             module.exports.cacheRecord(req, res, () => {
                 const { record } = res.locals;
-                if (record && res.locals.user._id.equals(record.userID)) {
-                    return next();
+                if (record && record.playerID) {
+                    res.locals.user.players.forEach(playerID => {
+                        if (playerID.equals(record.playerID)) {
+                            return next();
+                        }
+                    });
                 }
 
                 req.flash(`error`, `You don't have permission for that`);

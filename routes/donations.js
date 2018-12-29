@@ -18,7 +18,7 @@ const Donation = require('../models/donation');
 // 'create' route
 router.post('/', (req, res) => {
     const newDonation = {
-        userID: res.locals.user._id,
+        playerID: res.locals.player._id,
         charityID: req.body.charityID,
         percentage: Number(100.0),
     };

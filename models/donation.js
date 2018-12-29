@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const DonationSchema = new mongoose.Schema({
-    userID: {
+    playerID: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: "Player"
     },
     charityID: {
         type: mongoose.Schema.Types.ObjectId,
