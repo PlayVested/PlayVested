@@ -56,7 +56,7 @@ router.get('/logout', (req, res) => {
     req.flash(`success`, `Logged you out!`);
 
     // send them back to the home page
-    res.redirect('/charities');
+    res.redirect('/');
 });
 
 module.exports = router;

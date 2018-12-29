@@ -11,7 +11,7 @@ const Record = require('../models/record');
 // });
 
 // 'total' route
-router.get('/total/:gameID', (req, res) => {
+router.get('/total', (req, res) => {
     // this can be called for a user and/or game
     let searchParams = {};
     if (req.query.userID) {
