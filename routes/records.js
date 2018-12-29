@@ -22,7 +22,7 @@ router.get('/total', (req, res) => {
     }
 
     // make sure something was specified
-    if (searchParams == {}) {
+    if (Object.keys(searchParams).length === 0) {
         res.status(400);
         res.send(`User or game is required`);
         return;
