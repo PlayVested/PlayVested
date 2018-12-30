@@ -37,5 +37,6 @@ UserSchema.methods.getDisplayName = function getDisplayName() {
 };
 
 UserSchema.plugin(passportLocalMongoose);
+UserSchema.index({ _id: 1, username: 1 }, { unique: true });
 
 module.exports = mongoose.model("User", UserSchema);
