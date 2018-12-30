@@ -1,6 +1,6 @@
 <% include ../partials/header %>
 
-    <a href="/">Back</a>
+    <a href="/charities">Back</a>
     <script>
         function deleteConfirm() {
             return confirm(`Are you sure you want to delete this charity?`);
@@ -39,31 +39,6 @@
         <div class="item-action">
             <a href="/charities/<%= charity._id %>/edit" class="btn btn-warning">Edit</a>
         </div>
-    
-        <!-- <div class="row">
-            <div class="col">
-                <h2 class="page-header">Members</h2>
-            </div>
-            <div class="col">
-                <a href="/charities/<%= charity._id %>/member/new" class="btn btn-primary">Add Member</a>
-            </div>
-        </div>
-        <div class="container">
-            <% charity.friends.forEach((friend) => { %>
-                <div class="row">
-                    <div class="col">
-                        <a href="/charities/<%= charity._id %>/friends/<%= friend._id %>">
-                            <%= friend.getDisplayName() %>
-                        </a>
-                    </div>
-                    <div class="col">
-                            <form class="delete-item" action="/charities/<%= charity._id %>/friends/<%= friend._id %>?_method=DELETE" method="POST" onsubmit="return deleteConfirm()">
-                            <button class="btn btn-danger">Delete</button>
-                        </form>
-                    </div>
-                </div>
-            <% }); %>
-        </div> -->
     </div>
 
 <% include ../partials/footer %>

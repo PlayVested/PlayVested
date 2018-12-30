@@ -27,8 +27,13 @@ module.exports = {
         isLoggedIn(req, res, () => {
             module.exports.cacheCharity(req, res, () => {
                 const { charity } = res.locals;
-                if (charity && res.locals.user._id.equals(charity.ownerID)) {
-                    return next();
+                if (charity) {
+                    for (let i = 0; i < charity.ownerID.length; i++ ) {
+                        const ownerID = charity.ownerID[i];
+                        if (res.locals.user._id.equals(ownerID)) {
+                            return next();
+                        }
+                    }
                 }
 
                 req.flash(`error`, `You don't have permission for that`);

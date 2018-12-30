@@ -1,0 +1,35 @@
+<% include ../partials/header %>
+
+    <div style="text-align:center">
+        <h1>New Charity</h1>
+    </div>
+
+    <div class="new-item-form">
+        <form class="form-inline" name="editForm" action="/charities" method="POST">
+            <div class="form-group">
+                <input class="form-control" type="text" name="charity[organizationName]" placeholder="Organization Name">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="charity[phoneNumber]" placeholder="Phone Number">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="charity[address]" placeholder="Address">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="charity[city]" placeholder="City">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="charity[state]" placeholder="State">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="charity[zipcode]" placeholder="Zipcode">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="charity[taxID]" placeholder="Tax ID">
+            </div>
+
+            <% include ../partials/formButtons %>
+        </form>
+    </div>
+
+<% include ../partials/footer %>

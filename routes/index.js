@@ -32,7 +32,7 @@ router.post('/register', (req, res) => {
 
         // new user has been created
         passport.authenticate('local', {
-            successRedirect: '/charities',
+            successRedirect: '/',
             failureRedirect: '/register',
         })(req, res, () => {});
     });
