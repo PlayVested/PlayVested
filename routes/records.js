@@ -3,6 +3,7 @@ const router = express.Router({mergeParams: true});
 
 const { canEditRecord } = require('../middleware/record');
 
+const Game = require('../models/game');
 const Record = require('../models/record');
 
 // 'index' route
@@ -10,24 +11,7 @@ const Record = require('../models/record');
 //     res.render('records/index');
 // });
 
-// 'total' route
-router.get('/total', (req, res) => {
-    // this can be called for a player and/or game
-    let searchParams = {};
-    if (req.query.playerID) {
-        searchParams.playerID = req.query.playerID;
-    }
-    if (req.query.gameID) {
-        searchParams.gameID = req.query.gameID;
-    }
-
-    // make sure something was specified
-    if (Object.keys(searchParams).length === 0) {
-        res.status(400);
-        res.send(`Player or game is required`);
-        return;
-    }
-
+function findRecords(req, res, searchParams) {
     Record.find(searchParams, (err, foundRecords) => {
         if (err) {
             console.error(`Error: ${err.message}`);
@@ -67,6 +51,43 @@ router.get('/total', (req, res) => {
         res.status(404);
         res.send('Failed to find records');
     });
+}
+
+// 'total' route
+router.get('/total', (req, res) => {
+    // this can be called for a player and/or game
+    let searchParams = {};
+    if (req.query.playerID) {
+        searchParams.playerID = req.query.playerID;
+    }
+    if (req.query.gameID) {
+        searchParams.gameID = req.query.gameID;
+    }
+
+    // make sure something was specified
+    if (Object.keys(searchParams).length === 0) {
+        res.status(400);
+        res.send(`Player or game is required`);
+        return;
+    }
+
+    // if there is a game specified, then make sure it is owned by the dev
+    if (searchParams.gameID) {
+        Game.find({_id: searchParams.gameID, devID: req.query.devID}, (err, foundGames) => {
+            if (err) {
+                console.error(`Error: ${err.message}`);
+                res.status(400);
+                return res.send('Error finding game');
+            } else if (!foundGames.length) {
+                res.status(400);
+                return res.send('Game is not owned by the specified developer');
+            }
+
+            return findRecords(req, res, searchParams);
+        });
+    } else {
+        return findRecords(req, res, searchParams);
+    }
 });
 
 // 'create' route
@@ -84,22 +105,34 @@ router.post('/', (req, res) => {
         return;
     }
 
-    Record.create(newRecord, (err, createdRecord) => {
-        if (err) {
-            console.error(`Error: ${err.message}`);
-            req.flash(`error`, `Error creating record: ${err.message}`);
+    Game.find({devID: req.body.devID, _id: req.body.gameID}, (gameErr, foundGame) => {
+        if (gameErr) {
+            console.error(`Error: ${gameErr.message}`);
+            res.status(400);
+            res.send(`Error: ${gameErr.message}`);
+        } else if (!foundGame) {
+            console.error(`Game not found`);
+            res.status(404);
+            res.send(`Game not found`);
         } else {
-            console.log('Created: ' + createdRecord);
-            if (req.isAuthenticated()) {
-                req.flash(`success`, `Successfully created record!`);
-                res.redirect(`/records/${createdRecord._id}`);
-            } else {
-                res.status(200);
-                res.send({
-                    amountEarned: createdRecord.amountEarned,
-                    status: 'Success'
-                });
-            }
+            Record.create(newRecord, (err, createdRecord) => {
+                if (err) {
+                    console.error(`Error: ${err.message}`);
+                    req.flash(`error`, `Error creating record: ${err.message}`);
+                } else {
+                    console.log('Created: ' + createdRecord);
+                    if (req.isAuthenticated()) {
+                        req.flash(`success`, `Successfully created record!`);
+                        res.redirect(`/records/${createdRecord._id}`);
+                    } else {
+                        res.status(200);
+                        res.send({
+                            amountEarned: createdRecord.amountEarned,
+                            status: 'Success',
+                        });
+                    }
+                }
+            });
         }
     });
 });
