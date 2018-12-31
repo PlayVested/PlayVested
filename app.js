@@ -14,6 +14,7 @@ const seedData = require('./seedData');
 
 const charitiesRoutes = require('./routes/charities');
 const indexRoutes = require('./routes/index');
+const developerRoutes = require('./routes/developers');
 const donationRoutes = require('./routes/donations');
 const gameRoutes = require('./routes/games');
 const playerRoutes = require('./routes/player');
@@ -74,6 +75,7 @@ app.use((req, res, next) => {
 // wire up all the sub-routes
 app.use('/', indexRoutes);
 app.use('/charities', charitiesRoutes);
+app.use('/developers', developerRoutes);
 app.use('/donations', donationRoutes);
 app.use('/games', gameRoutes);
 app.use('/players', playerRoutes);

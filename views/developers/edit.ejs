@@ -1,0 +1,32 @@
+<% include ../partials/header %>
+
+    <div style="text-align:center">
+        <h1>Edit Developer</h1>
+    </div>
+
+    <div class="new-item-form">
+        <form class="form-inline" name="editForm" action="/developers/<%= developer._id %>?_method=PUT" method="POST">
+            <div class="form-group">
+                <input class="form-control" type="text" name="developer[companyName]" placeholder="Company Name" value="<%= developer.companyName %>">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="developer[phoneNumber]" placeholder="Phone Number" value="<%= developer.phoneNumber %>">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="developer[address]" placeholder="Address" value="<%= developer.address %>">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="developer[city]" placeholder="City" value="<%= developer.city %>">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="developer[state]" placeholder="State" value="<%= developer.state %>">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="developer[zipcode]" placeholder="Zipcode" value="<%= developer.zipcode %>">
+            </div>
+
+            <% include ../partials/formButtons %>
+        </form>
+    </div>
+
+<% include ../partials/footer %>

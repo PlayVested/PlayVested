@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router({mergeParams: true});
 
-const { canEditCharity } = require('../middleware/charity');
+const { cacheCharity, canEditCharity } = require('../middleware/charity');
 const isLoggedIn = require('../middleware/isLoggedIn');
 
 const Charity = require('../models/charity');
@@ -40,7 +40,7 @@ router.post('/', isLoggedIn, (req, res) => {
 });
 
 // 'show' route
-router.get('/:charityID', canEditCharity, (req, res) => {
+router.get('/:charityID', cacheCharity, (req, res) => {
     return res.render('charities/show');
 });
 
@@ -57,10 +57,9 @@ router.put('/:charityID', canEditCharity, (req, res) => {
         charity.save();
         req.flash(`success`, `Updated charity info`);
         return res.redirect(`/charities/${charity._id}`);
-    } else {
-        req.flash(`error`, `Failed to update charity info`);
     }
 
+    req.flash(`error`, `Failed to update charity info`);
     return res.redirect(`/`);
 });
 

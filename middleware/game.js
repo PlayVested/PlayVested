@@ -1,3 +1,4 @@
+const Developer = require('../models/developer');
 const Game = require('../models/game');
 const isLoggedIn = require('./isLoggedIn');
 
@@ -26,19 +27,27 @@ module.exports = {
     canEditGame: (req, res, next) => {
         isLoggedIn(req, res, () => {
             module.exports.cacheGame(req, res, () => {
-                const { game } = res.locals;
-                if (game && res.locals.user._id.equals(game.ownerID)) {
-                    return next();
-                }
+                Developer.findById(res.locals.game.devID, (err, developer) => {
+                    if (err) {
+                        console.error(`Error: ${err.message}`);
+                    } else if (developer) {
+                        for (let i = 0; i < developer.ownerID.length; i++) {
+                            const ownerID = developer.ownerID[i];
+                            if (res.locals.user._id.equals(ownerID)) {
+                                return next();
+                            }
+                        }
 
-                req.flash(`error`, `You don't have permission for that`);
+                        req.flash(`error`, `You don't have permission for that`);
+                    }
 
-                // clear out the game so it isn't used by accident
-                delete res.locals.game;
+                    // clear out the game so it isn't used by accident
+                    delete res.locals.game;
 
-                // if they are logged in but anything else goes wrong,
-                // just send them back where they came from
-                res.redirect('back');
+                    // if they are logged in but anything else goes wrong,
+                    // just send them back where they came from
+                    res.redirect('back');
+                });
             });
         });
     },

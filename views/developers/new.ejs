@@ -1,0 +1,32 @@
+<% include ../partials/header %>
+
+    <div style="text-align:center">
+        <h1>New Developer</h1>
+    </div>
+
+    <div class="new-item-form">
+        <form class="form-inline" name="editForm" action="/developers" method="POST">
+            <div class="form-group">
+                <input class="form-control" type="text" name="developer[companyName]" placeholder="Company Name">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="developer[phoneNumber]" placeholder="Phone Number">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="developer[address]" placeholder="Address">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="developer[city]" placeholder="City">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="developer[state]" placeholder="State">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="developer[zipcode]" placeholder="Zipcode">
+            </div>
+
+            <% include ../partials/formButtons %>
+        </form>
+    </div>
+
+<% include ../partials/footer %>

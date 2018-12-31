@@ -16,14 +16,7 @@ router.get('/register', (req, res) => {
 
 // handle signing up a new user
 router.post('/register', (req, res) => {
-    const user = {
-        username: req.body.username, 
-        email: req.body.email,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        friends: [],
-    };
-    User.register(new User(user), req.body.password, (err, newUser) => {
+    User.register(req.body.user, req.body.password, (err, newUser) => {
         if (err) {
             console.error(err);
             req.flash(`error`, `Failed to register user: ${err.message}`);
@@ -31,6 +24,7 @@ router.post('/register', (req, res) => {
         }
 
         // new user has been created
+        req.body.username = req.body.user.username;
         passport.authenticate('local', {
             successRedirect: '/',
             failureRedirect: '/register',

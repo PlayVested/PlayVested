@@ -1,43 +1,33 @@
 const express = require('express');
 const router = express.Router({mergeParams: true});
 
-const { canEditGame } = require('../middleware/game');
+const { cacheGame, canEditGame } = require('../middleware/game');
+const isLoggedIn = require('../middleware/isLoggedIn');
 
+const Developer = require('../models/developer');
 const Game = require('../models/game');
 
-// 'index' route
-router.get('/', (req, res) => {
-    Game.find({}, (err, games) => {
+// 'new' route
+router.get('/new', isLoggedIn, (req, res) => {
+    Developer.find({ ownerID: req.user._id }, (err, developers) => {
         if (err) {
-            console.error(`Error getting games: ${err.message}`);
-            res.redirect('/');
+            console.error(`Error: ${err.message}`);
+            req.flash(`error`, `Error finding developers: ${err.message}`);
+            res.redirect(`back`);
         } else {
-            res.render('games/index', { games });
+            const selectedID = req.query.developerID;
+            res.render('games/new', { developers, selectedID });
         }
     });
 });
 
-// 'new' route
-router.get('/new', (req, res) => {
-    res.render('games/new');
-});
-
 // 'create' route
-router.post('/', (req, res) => {
-    const newGame = {
-        companyName: req.body.companyName,
-        phoneNumber: req.body.phoneNumber,
-        address: req.body.address,
-        city: req.body.city,
-        state: req.body.state,
-        zipcode: req.body.zipcode,
-        ownerID: res.locals.user._id,
-    };
-
-    Game.create(newGame, (err, createdGame) => {
+router.post('/', isLoggedIn, (req, res) => {
+    Game.create(req.body.game, (err, createdGame) => {
         if (err) {
             console.error(`Error: ${err.message}`);
             req.flash(`error`, `Error creating game: ${err.message}`);
+            res.redirect(`back`);
         } else {
             console.log('Created: ' + createdGame);
             req.flash(`success`, `Successfully created game!`);
@@ -47,13 +37,29 @@ router.post('/', (req, res) => {
 });
 
 // 'show' route
-router.get('/:gameID', canEditGame, (req, res) => {
-    return res.render('games/show');
+router.get('/:gameID', cacheGame, (req, res) => {
+    Developer.findById(res.locals.game.devID, (err, developer) => {
+        if (err) {
+            console.error(`Error: ${err.message}`);
+            req.flash(`error`, `Error getting developer: ${err.message}`);
+            res.redirect(`back`);
+        } else {
+            res.render('games/show', { developer });
+        }
+    });
 });
 
 // 'edit' route
 router.get('/:gameID/edit', canEditGame, (req, res) => {
-    return res.render('games/edit');
+    Developer.find({ ownerID: req.user._id }, (err, developers) => {
+        if (err) {
+            console.error(`Error: ${err.message}`);
+            req.flash(`error`, `Error editing game: ${err.message}`);
+            res.redirect(`back`);
+        } else {
+            res.render('games/edit', { developers });
+        }
+    });
 });
 
 // 'update' route
@@ -64,10 +70,10 @@ router.put('/:gameID', canEditGame, (req, res) => {
         game.save();
         req.flash(`success`, `Updated game info`);
         res.redirect(`/games/${game._id}`);
-    } else {
-        req.flash(`error`, `Failed to update game info`);
+        return res.redirect(`/games/${game._id}`);
     }
 
+    req.flash(`error`, `Failed to update game info`);
     return res.redirect(`/`);
 });
 
@@ -75,19 +81,16 @@ router.put('/:gameID', canEditGame, (req, res) => {
 router.delete('/:gameID', canEditGame, (req, res) => {
     const { game } = res.locals;
     if (game) {
-        if (window.confirm(`This will permanently delete the game, are you sure?`)) {
-            game.remove((err) => {
-                if (err) {
-                    console.error(`Error: ${err.message}`);
-                    req.flash(`error`, `Failed to remove game: ${err.message}`);
-                } else {
-                    req.flash(`success`, `Game deleted`);
-                }
-            });
+        game.remove((err) => {
+            if (err) {
+                console.error(`Error: ${err.message}`);
+                req.flash(`error`, `Failed to remove game: ${err.message}`);
+            } else {
+                req.flash(`success`, `Game deleted`);
+            }
+
             return res.redirect('/games');
-        } else {
-            return res.redirect('back');
-        }
+        });
     }
 });
 

@@ -1,6 +1,7 @@
 <% include ../partials/header %>
 
-    <h1>This is the game index page</h1>
+    <a href="/developers/<%= developer._id %>">Back</a>
+    <h1>This is the game index page for <%= developer.companyName %></h1>
 
     <div class="row">
         <div class="col-lg-6">
@@ -15,7 +16,7 @@
             </ul>
 
             <% if (user) { %>
-                <a href="/games/new" class="btn btn-lg btn-primary">Add Game</a>
+                <a href="/games/new?developerID=<%= developer._id %>" class="btn btn-lg btn-primary">Add Game</a>
             <% } %>
         </div>
     </div>

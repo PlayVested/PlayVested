@@ -1,31 +1,27 @@
 const Charity = require(`./models/charity`);
-const Developer = require(`./models/devolper`);
+const Developer = require(`./models/developer`);
 const Game = require(`./models/game`);
 const User = require(`./models/user`);
 
 // Static dummy data used to populate the DB if it is empty
 const defaultUsers = [
     {
-        username: 'Becca',
-        email: `becca@unitedway.com`,
+        username: `becca@unitedway.com`,
         firstName: `Becca`,
         lastName: `Guyette`,
     },
     {
-        username: 'Randall',
-        email: `randall_summit@usc.salvationarmy.org`,
+        username: `randall_summit@usc.salvationarmy.org`,
         firstName: `Randall`,
         lastName: `Summit`,
     },
     {
-        username: 'Theringer',
-        email: `theringer@backflip.com`,
+        username: `theringer@backflip.com`,
         firstName: `Tod`,
         lastName: `Ringer`,
     },
     {
-        username: 'LukeSkywalker',
-        email: `luke@radiangames.com`,
+        username: `luke@radiangames.com`,
         firstName: `Luke`,
         lastName: `Schnider`,
     },
@@ -96,7 +92,7 @@ const defaultGames = [
 
 function createUser(user) {
     return new Promise((resolve, reject) => {
-        User.create(user, (err, newUser) => {
+        User.register(user, user.firstName, (err, newUser) => {
             if (err) {
                 console.error(`Error creating user: ${err}`);
                 reject();
@@ -110,8 +106,7 @@ function createUser(user) {
 
 function createCharity(charity, idx) {
     return new Promise((resolve, reject) => {
-        const ownerID = [defaultUsers[idx]._id];
-        charity.ownerID = ownerID;
+        charity.ownerID = [defaultUsers[idx]._id];
         Charity.create(charity, (err, newCharity) => {
             if (err) {
                 console.error(`Error creating charity: ${err}`);
@@ -127,8 +122,7 @@ function createCharity(charity, idx) {
 function createDeveloper(developer, idx) {
     return new Promise((resolve, reject) => {
         const baseIdx = defaultCharities.length;
-        const ownerID = [defaultUsers[baseIdx + idx]._id];
-        developer.ownerID = ownerID;
+        developer.ownerID = [defaultUsers[baseIdx + idx]._id];
         Developer.create(developer, (err, newDeveloper) => {
             if (err) {
                 console.error(`Error creating developer: ${err}`);
