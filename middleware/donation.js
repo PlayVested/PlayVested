@@ -1,5 +1,5 @@
 const Donation = require('../models/donation');
-const isLoggedIn = require('./isLoggedIn');
+const { isLoggedIn } = require('./misc');
 
 module.exports = {
     /**

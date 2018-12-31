@@ -1,5 +1,5 @@
 const Charity = require('../models/charity');
-const isLoggedIn = require('./isLoggedIn');
+const { isLoggedIn, isOwner } = require('./misc');
 
 module.exports = {
     /**
@@ -27,13 +27,8 @@ module.exports = {
         isLoggedIn(req, res, () => {
             module.exports.cacheCharity(req, res, () => {
                 const { charity } = res.locals;
-                if (charity) {
-                    for (let i = 0; i < charity.ownerID.length; i++ ) {
-                        const ownerID = charity.ownerID[i];
-                        if (res.locals.user._id.equals(ownerID)) {
-                            return next();
-                        }
-                    }
+                if (isOwner(req.user, charity)) {
+                    return next();
                 }
 
                 req.flash(`error`, `You don't have permission for that`);

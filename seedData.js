@@ -6,21 +6,25 @@ const User = require(`./models/user`);
 // Static dummy data used to populate the DB if it is empty
 const defaultUsers = [
     {
+        _id: `5c29a8f8d69ecb4544b308f3`,
         username: `becca@unitedway.com`,
         firstName: `Becca`,
         lastName: `Guyette`,
     },
     {
+        _id: `5c29a8f8d69ecb4544b308f4`,
         username: `randall_summit@usc.salvationarmy.org`,
         firstName: `Randall`,
         lastName: `Summit`,
     },
     {
+        _id: `5c29a8f8d69ecb4544b308f5`,
         username: `theringer@backflip.com`,
         firstName: `Tod`,
         lastName: `Ringer`,
     },
     {
+        _id: `5c29a8f8d69ecb4544b308f6`,
         username: `luke@radiangames.com`,
         firstName: `Luke`,
         lastName: `Schnider`,

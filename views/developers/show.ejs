@@ -29,14 +29,16 @@
             </h2>
             <a href="/developers/<%= developer._id %>/games" class="btn btn-lg btn-primary">Games</a>
         </div>
-        <div class="item-action">
-            <form class="delete-item" action="/developers/<%= developer._id %>?_method=DELETE" method="POST">
-                <button class="btn btn-danger">Delete</button>
-            </form>
-        </div>
-        <div class="item-action">
-            <a href="/developers/<%= developer._id %>/edit" class="btn btn-warning">Edit</a>
-        </div>
+        <% if (isOwner(user, developer)) { %>
+            <div class="item-action">
+                <form class="delete-item" action="/developers/<%= developer._id %>?_method=DELETE" method="POST">
+                    <button class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+            <div class="item-action">
+                <a href="/developers/<%= developer._id %>/edit" class="btn btn-warning">Edit</a>
+            </div>
+        <% } %>
     </div>
 
 <% include ../partials/footer %>

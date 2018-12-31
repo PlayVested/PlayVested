@@ -1,5 +1,5 @@
 const Record = require('../models/record');
-const isLoggedIn = require('./isLoggedIn');
+const { isLoggedIn } = require('./misc');
 
 module.exports = {
     /**
@@ -27,8 +27,8 @@ module.exports = {
         isLoggedIn(req, res, () => {
             module.exports.cacheRecord(req, res, () => {
                 const { record } = res.locals;
-                if (record && record.playerID) {
-                    res.locals.user.players.forEach(playerID => {
+                if (req.user && record && record.playerID) {
+                    req.user.players.forEach(playerID => {
                         if (playerID.equals(record.playerID)) {
                             return next();
                         }

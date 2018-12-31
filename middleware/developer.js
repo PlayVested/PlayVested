@@ -1,5 +1,5 @@
 const Developer = require('../models/developer');
-const isLoggedIn = require('./isLoggedIn');
+const { isLoggedIn } = require('./misc');
 
 module.exports = {
     /**
@@ -27,13 +27,8 @@ module.exports = {
         isLoggedIn(req, res, () => {
             module.exports.cacheDeveloper(req, res, () => {
                 const { developer } = res.locals;
-                if (developer) {
-                    for (let i = 0; i < developer.ownerID.length; i++) {
-                        const ownerID = developer.ownerID[i];
-                        if (res.locals.user._id.equals(ownerID)) {
-                            return next();
-                        }
-                    }
+                if (isOwner(req.user, developer)) {
+                    return next();
                 }
 
                 req.flash(`error`, `You don't have permission for that`);

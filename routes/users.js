@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router({mergeParams: true});
-const passport = require('passport');
 
-const isLoggedIn = require('../middleware/isLoggedIn');
+const { isLoggedIn } = require('../middleware/misc');
 
 // 'index' route
 // no reason to view all users on their own, redirect to home page

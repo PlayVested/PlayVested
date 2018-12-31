@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router({mergeParams: true});
 
 const { cacheDeveloper, canEditDeveloper } = require('../middleware/developer');
+const { isLoggedIn, isOwner } = require('../middleware/misc');
 
 const Developer = require('../models/developer');
 const Game = require('../models/game');
@@ -31,12 +32,12 @@ router.get('/:developerID/games', cacheDeveloper, (req, res) => {
 });
 
 // 'new' route
-router.get('/new', (req, res) => {
+router.get('/new', isLoggedIn, (req, res) => {
     res.render('developers/new');
 });
 
 // 'create' route
-router.post('/', (req, res) => {
+router.post('/', isLoggedIn, (req, res) => {
     req.body.developer.ownerID = [req.user._id];
     Developer.create(req.body.developer, (err, createdDeveloper) => {
         if (err) {
@@ -53,7 +54,7 @@ router.post('/', (req, res) => {
 
 // 'show' route
 router.get('/:developerID', cacheDeveloper, (req, res) => {
-    return res.render('developers/show');
+    return res.render('developers/show', { isOwner });
 });
 
 // 'edit' route

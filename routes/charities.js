@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router({mergeParams: true});
 
 const { cacheCharity, canEditCharity } = require('../middleware/charity');
-const isLoggedIn = require('../middleware/isLoggedIn');
+const { isLoggedIn, isOwner } = require('../middleware/misc');
 
 const Charity = require('../models/charity');
 
@@ -41,7 +41,7 @@ router.post('/', isLoggedIn, (req, res) => {
 
 // 'show' route
 router.get('/:charityID', cacheCharity, (req, res) => {
-    return res.render('charities/show');
+    return res.render('charities/show', { isOwner });
 });
 
 // 'edit' route

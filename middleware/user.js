@@ -1,4 +1,4 @@
-const isLoggedIn = require('./isLoggedIn');
+const { isLoggedIn } = require('./misc');
 
 module.exports = {
     /**

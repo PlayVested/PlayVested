@@ -1,6 +1,6 @@
 const Developer = require('../models/developer');
 const Game = require('../models/game');
-const isLoggedIn = require('./isLoggedIn');
+const { isLoggedIn, isOwner } = require('./misc');
 
 module.exports = {
     /**
@@ -30,16 +30,11 @@ module.exports = {
                 Developer.findById(res.locals.game.devID, (err, developer) => {
                     if (err) {
                         console.error(`Error: ${err.message}`);
-                    } else if (developer) {
-                        for (let i = 0; i < developer.ownerID.length; i++) {
-                            const ownerID = developer.ownerID[i];
-                            if (res.locals.user._id.equals(ownerID)) {
-                                return next();
-                            }
-                        }
-
-                        req.flash(`error`, `You don't have permission for that`);
+                    } else if (isOwner(req.user, developer)) {
+                        return next();
                     }
+
+                    req.flash(`error`, `You don't have permission for that`);
 
                     // clear out the game so it isn't used by accident
                     delete res.locals.game;
