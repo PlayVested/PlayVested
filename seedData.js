@@ -7,34 +7,34 @@ const User = require(`./models/user`);
 const defaultUsers = [
     {
         _id: `5c29a8f8d69ecb4544b308f3`,
-        username: `becca@unitedway.com`,
-        firstName: `Becca`,
-        lastName: `Guyette`,
+        username: `jon@sadpuppies.org`,
+        firstName: `Jon`,
+        lastName: `Smith`,
     },
     {
         _id: `5c29a8f8d69ecb4544b308f4`,
-        username: `randall_summit@usc.salvationarmy.org`,
-        firstName: `Randall`,
-        lastName: `Summit`,
+        username: `jane@hungrykids.org`,
+        firstName: `Jane`,
+        lastName: `Doe`,
     },
     {
         _id: `5c29a8f8d69ecb4544b308f5`,
-        username: `theringer@backflip.com`,
-        firstName: `Tod`,
-        lastName: `Ringer`,
+        username: `max@extremegames.com`,
+        firstName: `Max`,
+        lastName: `Pain`,
     },
     {
         _id: `5c29a8f8d69ecb4544b308f6`,
-        username: `luke@radiangames.com`,
-        firstName: `Luke`,
-        lastName: `Schnider`,
+        username: `darling@dolls.com`,
+        firstName: `Darla`,
+        lastName: `Kinsington`,
     },
 ];
 
 const defaultCharities = [
     {
         _id: `5bfe194f4de8110016de4340`,
-        organizationName: `United Way`,
+        organizationName: `Sad Puppies`,
         phoneNumber: '555-123-4567',
         address: `123 Whatever St`,
         city: `Champaign`,
@@ -44,11 +44,11 @@ const defaultCharities = [
     },
     {
         _id: `5bfe194f4de8110016de4341`,
-        organizationName: `Salvation Army`,
+        organizationName: `Hungry Kids`,
         phoneNumber: '555-987-6543',
         address: `321 Downtown St`,
-        city: `Champaign`,
-        state: `IL`,
+        city: `MoTown`,
+        state: `MI`,
         zipcode: `61821`,
         taxID: `5678`,
     },
@@ -57,7 +57,7 @@ const defaultCharities = [
 const defaultDevelopers = [
     {
         _id: `5bfe194f4de8110016de4342`,
-        companyName: `Banaland Games`,
+        companyName: `Extreme Games`,
         phoneNumber: `555-192-8374`,
         address: `135 Uppity Ln`,
         city: `Porkshank`,
@@ -66,7 +66,7 @@ const defaultDevelopers = [
     },
     {
         _id: `5bfe194f4de8110016de4343`,
-        companyName: `Monkey Time`,
+        companyName: `Darling Dolls`,
         phoneNumber: `555-473-4389`,
         address: `2001 Space Oddity`,
         city: `Mooreplank`,
