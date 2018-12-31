@@ -9,6 +9,11 @@
 
     <div>
         <div class="page-header">
+            <% if (isOwner) { %>
+                <h2>
+                    ID: <%= developer._id %>
+                </h2>
+            <% } %>
             <h2>
                 Company Name: <%= developer.companyName %>
             </h2>
@@ -29,7 +34,7 @@
             </h2>
             <a href="/developers/<%= developer._id %>/games" class="btn btn-lg btn-primary">Games</a>
         </div>
-        <% if (isOwner(user, developer)) { %>
+        <% if (isOwner) { %>
             <div class="item-action">
                 <form class="delete-item" action="/developers/<%= developer._id %>?_method=DELETE" method="POST">
                     <button class="btn btn-danger">Delete</button>

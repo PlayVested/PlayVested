@@ -41,7 +41,7 @@ router.post('/', isLoggedIn, (req, res) => {
 
 // 'show' route
 router.get('/:charityID', cacheCharity, (req, res) => {
-    return res.render('charities/show', { isOwner });
+    return res.render('charities/show', { isOwner: isOwner(req.user, res.locals.charity) });
 });
 
 // 'edit' route

@@ -54,7 +54,7 @@ router.post('/', isLoggedIn, (req, res) => {
 
 // 'show' route
 router.get('/:developerID', cacheDeveloper, (req, res) => {
-    return res.render('developers/show', { isOwner });
+    return res.render('developers/show', { isOwner: isOwner(req.user, res.locals.developer) });
 });
 
 // 'edit' route

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router({mergeParams: true});
 
 const { cacheGame, canEditGame } = require('../middleware/game');
-const { isLoggedIn } = require('../middleware/misc');
+const { isLoggedIn, isOwner } = require('../middleware/misc');
 
 const Developer = require('../models/developer');
 const Game = require('../models/game');
@@ -44,7 +44,7 @@ router.get('/:gameID', cacheGame, (req, res) => {
             req.flash(`error`, `Error getting developer: ${err.message}`);
             res.redirect(`back`);
         } else {
-            res.render('games/show', { developer });
+            res.render('games/show', { developer, isOwner: isOwner(req.user, developer) });
         }
     });
 });

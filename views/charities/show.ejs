@@ -31,7 +31,7 @@
                 Tax ID: <%= charity.taxID %>
             </h2>
         </div>
-        <% if (isOwner(user, charity)) { %>
+        <% if (isOwner) { %>
             <div class="item-action">
                 <form class="delete-item" action="/charities/<%= charity._id %>?_method=DELETE" method="POST">
                     <button class="btn btn-danger">Delete</button>

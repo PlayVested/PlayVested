@@ -9,6 +9,11 @@
 
     <div>
         <div class="page-header">
+            <% if (isOwner) { %>
+            <h2>
+                ID: <%= game._id %>
+            </h2>
+            <% } %>
             <h2>
                 Name: <%= game.name %>
             </h2>
@@ -16,14 +21,16 @@
                 Developer: <%= developer.companyName %>
             </h2>
         </div>
-        <div class="item-action">
-            <form class="delete-item" action="/games/<%= game._id %>?_method=DELETE" method="POST">
-                <button class="btn btn-danger">Delete</button>
-            </form>
-        </div>
-        <div class="item-action">
-            <a href="/games/<%= game._id %>/edit" class="btn btn-warning">Edit</a>
-        </div>
+        <% if (isOwner) { %>
+            <div class="item-action">
+                <form class="delete-item" action="/games/<%= game._id %>?_method=DELETE" method="POST">
+                    <button class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+            <div class="item-action">
+                <a href="/games/<%= game._id %>/edit" class="btn btn-warning">Edit</a>
+            </div>
+        <% } %>
     </div>
 
 <% include ../partials/footer %>
