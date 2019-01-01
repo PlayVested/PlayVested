@@ -1,4 +1,5 @@
 const express = require('express');
+const passport = require('passport');
 const router = express.Router({mergeParams: true});
 
 const { userOwnsPlayer } = require('../middleware/user');
@@ -7,6 +8,7 @@ const Charity = require('../models/charity');
 const Donation = require('../models/donation');
 const Game = require('../models/game');
 const Player = require('../models/player');
+const User = require('../models/user');
 
 // 'index' route
 // no reason to view all players on their own, redirect to home page
@@ -89,50 +91,42 @@ router.post('/', (req, res) => {
 });
 
 // 'link' route
-router.post('/link', (req, res) => {
-    const userID = (req.params.user || {})._id;
-    const playerID = (req.params.player || {})._id;
-    if (userID === null || playerID === null) {
-        res.status(400);
-        res.send('user and player IDs are both required');
-    }
+router.post('/link', passport.authenticate('local'), (req, res) => {
+    // we don't want to leave them logged in on accident
+    // so just store the user ID and log them out now
+    const user = req.user;
+    req.logout();
 
-    User.findById(userID, (errUser, foundUser) => {
-        if (errUser) {
-            Console.err(`Failed to find user: ${errUser}`);
+    const playerID = req.body.playerID;
+    Player.findById(playerID, (errPlayer, foundPlayer) => {
+        if (errPlayer) {
+            Console.err(`Failed to find player: ${errPlayer}`);
             res.status(404);
-            res.send('User not found');
+            return res.send('Player not found');
         }
 
-        Player.findById(playerID, (errPlayer, foundPlayer) => {
-            if (errUser) {
-                Console.err(`Failed to find player: ${errPlayer}`);
+        // Make sure the player isn't already associated with another user
+        User.findOne({players: playerID}, (errDupe, foundDupe) => {
+            if (errDupe) {
+                Console.err(`Failed on dupe serach: ${errDupe}`);
                 res.status(404);
-                res.send('Player not found');
-            }
-
-            // Make sure the player isn't already associated with another user
-            User.find({players: playerID}, (errDupe, foundDupe) => {
-                if (errDupe) {
-                    Console.err(`Failed on dupe serach: ${errDupe}`);
-                    res.status(404);
-                    res.send('Error testing for duplicate users');
-                } else if (foundDupe) {
-                    if (foundDupe._id.equals(userID)) {
-                        res.status(200);
-                        res.send('User already associated with that player');
-                    } else {
-                        res.status(409);
-                        res.send('Player is already owned by another user');
-                    }
-                } else {
-                    foundUser.players.push(foundPlayer._id)
-                    foundUser.save();
-
+                return res.send('Error testing for duplicate users');
+            } else if (foundDupe) {
+                if (foundDupe._id.equals(user._id)) {
                     res.status(200);
-                    res.send('Success');
+                    return res.send('User already associated with that player');
                 }
-            });
+
+                res.status(409);
+                return res.send('Player is already owned by another user');
+            } else {
+                user.players = user.players || [];
+                user.players.push(foundPlayer._id)
+                user.save();
+
+                res.status(200);
+                return res.send('Success');
+            }
         });
     });
 });
