@@ -25,20 +25,14 @@ module.exports = {
      */
     canEditRecord: (req, res, next) => {
         isLoggedIn(req, res, () => {
-            module.exports.cacheRecord(req, res, () => {
-                const { record } = res.locals;
-                if (req.user && record && record.playerID) {
-                    req.user.players.forEach(playerID => {
-                        if (playerID.equals(record.playerID)) {
-                            return next();
-                        }
-                    });
+            Record.findById(req.params.recordID).populate('playerID').exec((err, record) => {
+                if (!err && req.user && record.playerID.ownerID && record.playerID.ownerID.equals(req.user._id)) {
+                    // pass the record through to the next route
+                    res.locals.record = record;
+                    return next();
                 }
 
                 req.flash(`error`, `You don't have permission for that`);
-
-                // clear out the record so it isn't used by accident
-                delete res.locals.record;
 
                 // if they are logged in but anything else goes wrong,
                 // just send them back where they came from

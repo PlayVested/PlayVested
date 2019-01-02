@@ -2,13 +2,12 @@ const express = require('express');
 const passport = require('passport');
 const router = express.Router({mergeParams: true});
 
-const { userOwnsPlayer } = require('../middleware/user');
+const { canEditPlayer } = require('../middleware/player');
 
 const Charity = require('../models/charity');
 const Donation = require('../models/donation');
 const Game = require('../models/game');
 const Player = require('../models/player');
-const User = require('../models/user');
 
 // 'index' route
 // no reason to view all players on their own, redirect to home page
@@ -91,13 +90,13 @@ router.post('/', (req, res) => {
 });
 
 // 'link' route
-router.post('/link', passport.authenticate('local'), (req, res) => {
+router.post('/:playerID/link', passport.authenticate('local'), (req, res) => {
     // we don't want to leave them logged in on accident
     // so just store the user ID and log them out now
-    const user = req.user;
+    const userID = req.user._id;
     req.logout();
 
-    const playerID = req.body.playerID;
+    const playerID = req.params.playerID;
     Player.findById(playerID, (errPlayer, foundPlayer) => {
         if (errPlayer) {
             Console.err(`Failed to find player: ${errPlayer}`);
@@ -106,52 +105,45 @@ router.post('/link', passport.authenticate('local'), (req, res) => {
         }
 
         // Make sure the player isn't already associated with another user
-        User.findOne({players: playerID}, (errDupe, foundDupe) => {
-            if (errDupe) {
-                Console.err(`Failed on dupe serach: ${errDupe}`);
-                res.status(404);
-                return res.send('Error testing for duplicate users');
-            } else if (foundDupe) {
-                if (foundDupe._id.equals(user._id)) {
-                    res.status(200);
-                    return res.send('User already associated with that player');
-                }
-
-                res.status(409);
-                return res.send('Player is already owned by another user');
-            } else {
-                user.players = user.players || [];
-                user.players.push(foundPlayer._id)
-                user.save();
-
+        if (foundPlayer.ownerID) {
+            if (foundPlayer.ownerID.equals(userID)) {
                 res.status(200);
-                return res.send('Success');
+                return res.send('User already associated with that player');
             }
-        });
+
+            res.status(409);
+            return res.send('Player is already owned by another user');
+        } else {
+            foundPlayer.ownerID = userID;
+            foundPlayer.save();
+
+            res.status(200);
+            return res.send('Success');
+        }
     });
 });
 
 // 'show' route
-router.get('/:playerID', userOwnsPlayer, (req, res) => {
+router.get('/:playerID', canEditPlayer, (req, res) => {
     res.render('players/show');
 });
 
 // 'edit' route
-router.get('/:playerID/edit', userOwnsPlayer, (req, res) => {
+router.get('/:playerID/edit', canEditPlayer, (req, res) => {
     return res.render('players/edit');
 });
 
 // 'update' route
-router.put('/:playerID', userOwnsPlayer, (req, res) => {
+router.put('/:playerID', canEditPlayer, (req, res) => {
     const { player } = res.locals;
     Object.assign(player, req.body.player);
     player.save();
     req.flash(`success`, `Updated player info`);
-    res.redirect(`/`);
+    res.redirect(`/players/${player._id}`);
 });
 
 // 'delete' route
-router.delete('/:playerID', userOwnsPlayer, (req, res) => {
+router.delete('/:playerID', canEditPlayer, (req, res) => {
     Player.findByIdAndDelete(req.body.playerID, (err, deletedPlayer) => {
         if (err) {
             console.error(`Error: ${err.message}`);

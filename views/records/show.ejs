@@ -1,0 +1,23 @@
+<% include ../partials/header %>
+
+    <a href="javascript:history.back()">Back</a>
+    <div>
+        <div class="page-header">
+            <h2>
+                playerID: <%= record.playerID._id %>
+            </h2>
+            <h2>
+                gameID: <%= record.gameID %>
+            </h2>
+            <h2>
+                Amount Earned: $<%= record.amountEarned %>
+            </h2>
+        </div>
+        <div class="item-action">
+            <form class="delete-item" action="/records/<%= record._id %>?_method=DELETE" method="POST">
+                <button class="btn btn-danger">Delete</button>
+            </form>
+        </div>
+    </div>
+
+<% include ../partials/footer %>

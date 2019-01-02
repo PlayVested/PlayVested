@@ -6,12 +6,6 @@ const UserSchema = new mongoose.Schema({
     email: String,
     firstName: String,
     lastName: String,
-    players: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Player"
-        }
-    ],
     friends: [
         {
             type: mongoose.Schema.Types.ObjectId,
