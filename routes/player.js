@@ -118,7 +118,7 @@ router.post('/:playerID/link', passport.authenticate('local'), (req, res) => {
             foundPlayer.save();
 
             res.status(200);
-            return res.send('Success');
+            return res.send('Success!');
         }
     });
 });
