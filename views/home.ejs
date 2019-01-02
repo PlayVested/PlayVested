@@ -2,10 +2,15 @@
 
     <h2>Gaming for Good</h2> 
 
+    <br>
     <a class="btn btn-block btn-primary" href="/developers">Developers</a></li>
     <a class="btn btn-block btn-primary" href="/charities">Charities</a></li>
     <% if (user) { %>
         <a class="btn btn-block btn-primary" href="/users/<%= user._id %>">Account Info</a>
+        <br>
+        <div>
+            <a href="download/PV_unity_demo.zip">Download</a> sample Unity game
+        </div>
     <% } %>
 
 <% include ./partials/footer %>
