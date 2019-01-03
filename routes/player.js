@@ -5,7 +5,7 @@ const router = express.Router({mergeParams: true});
 const { canEditPlayer } = require('../middleware/player');
 
 const Charity = require('../models/charity');
-const Donation = require('../models/donation');
+const Allocation = require('../models/allocation');
 const Game = require('../models/game');
 const Player = require('../models/player');
 
@@ -65,21 +65,21 @@ router.post('/', (req, res) => {
                 }
                 console.log('Created Player: ' + createdPlayer);
 
-                // finally, create the donation info and link it to the player
-                const newDonation = {
+                // finally, create the allocation info and link it to the player
+                const newAllocation = {
                     playerID: createdPlayer._id,
                     charityID: foundCharity._id,
                     percentage: 100,
                 };
 
-                Donation.create(newDonation, (err, createdDonation) => {
+                Allocation.create(newAllocation, (err, createdAllocation) => {
                     if (err) {
                         console.error(`Error: ${err.message}`);
                         res.status(400);
-                        res.send('Failed to create donation');
+                        res.send('Failed to create allocation');
                         return;
                     }
-                    console.log('Created Donation: ' + createdDonation);
+                    console.log('Created Allocation: ' + createdAllocation);
 
                     res.status(200);
                     res.send(String(createdPlayer._id));

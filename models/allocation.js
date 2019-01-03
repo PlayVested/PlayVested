@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const DonationSchema = new mongoose.Schema({
+const AllocationSchema = new mongoose.Schema({
     playerID: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Player"
@@ -15,4 +15,4 @@ const DonationSchema = new mongoose.Schema({
   timestamps: true
 });
 
-module.exports = mongoose.model("Donation", DonationSchema);
+module.exports = mongoose.model("Allocation", AllocationSchema);
