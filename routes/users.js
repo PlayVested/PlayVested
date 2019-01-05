@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router({mergeParams: true});
 
 const { isLoggedIn } = require('../middleware/misc');
+const Allocation = require('../models/allocation');
 const Player = require('../models/player');
 const Record = require('../models/record');
 
@@ -31,13 +32,49 @@ router.get('/:userID', isLoggedIn, (req, res) => {
                 console.error(`Error: ${playerErr}`);
                 res.redirect('back');
             } else {
-                const playerIDs = players.map(player => player._id);
-                Record.find({playerID: playerIDs}).sort({createdAt: 'desc'}).populate('gameID').exec((recordErr, records) => {
+                Record.find({playerID: players}).sort({createdAt: 'desc'}).populate('gameID').exec((recordErr, records) => {
                     if (recordErr) {
                         console.error(`Error: ${recordErr}`);
                         res.redirect('back');
                     } else {
-                        return res.render('users/show', { records });
+                        Allocation.find({playerID: players}).populate('charityID').exec((allocationErr, foundAllocations) => {
+                            if (allocationErr) {
+                                console.error(`Error: ${allocationErr}`);
+                                res.redirect('back');
+                            } else {
+                                // combine the allocations for all player associated with this user
+                                // sum up the splits and then normalize the results
+                                let allocations = [];
+                                let allocDict = {};
+                                let total = 0;
+                                foundAllocations.forEach((alloc) => {
+                                    if (!allocDict[alloc.charityID]) {
+                                        allocDict[alloc.charityID] = {
+                                            organizationName: alloc.charityID.organizationName,
+                                            percentage: 0,
+                                        };
+                                    }
+
+                                    allocDict[alloc.charityID].percentage += alloc.percentage;
+                                    total += alloc.percentage;
+                                });
+
+                                // now smash the results back down to a simple array
+                                Object.keys(allocDict).forEach((key) => {
+                                    allocations.push({
+                                        organizationName: allocDict[key].organizationName,
+                                        percentage: Math.round(100.0 * allocDict[key].percentage / total),
+                                    });
+                                });
+
+                                // sort alphabetically
+                                allocations.sort((a, b) => {
+                                    return (a.organizationName.localeCompare(b.organizationName));
+                                });
+
+                                return res.render('users/show', { records, allocations });
+                            }
+                        });
                     }
                 });
             }

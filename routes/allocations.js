@@ -5,16 +5,6 @@ const { canEditAllocation } = require('../middleware/allocation');
 
 const Allocation = require('../models/allocation');
 
-// 'index' route
-// router.get('/', (req, res) => {
-//     res.render('allocations/index');
-// });
-
-// 'new' route
-// router.get('/new', (req, res) => {
-//     res.render('allocations/new');
-// });
-
 // 'create' route
 router.post('/', (req, res) => {
     const newAllocation = {

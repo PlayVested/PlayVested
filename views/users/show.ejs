@@ -22,7 +22,7 @@
         <div class="item-action">
             <a href="/users/<%= user._id %>/edit" class="btn btn-warning">Edit</a>
         </div>
-    
+
         <div class="row">
             <div class="col">
                 <h2 class="page-header">Records</h2>
@@ -47,6 +47,32 @@
                         </form>
                     </div>
                 </div>
+            <% }); %>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <h2 class="page-header">Allocations</h2>
+            </div>
+        </div>
+        <div class="container">
+            <% allocations.forEach((allocation) => { %>
+            <div class="row">
+                <div class="col">
+                    <%= allocation.organizationName %>
+                </div>
+                <div class="col">
+                    <%= allocation.percentage %>%
+                </div>
+                <div class="col">
+                </div>
+                <div class="col">
+                    <form class="delete-item" action="/allocations/<%= allocation._id %>?_method=DELETE" method="POST"
+                        onsubmit="return confirm(`Are you sure you want to delete this allocation?`)">
+                        <button class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
             <% }); %>
         </div>
 
