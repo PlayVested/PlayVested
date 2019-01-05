@@ -77,6 +77,9 @@ router.delete('/:charityID', canEditCharity, (req, res) => {
 
             return res.redirect('/charities');
         });
+    } else {
+        req.flash(`error`, `Failed to get charity`);
+        return res.redirect('back');
     }
 });
 

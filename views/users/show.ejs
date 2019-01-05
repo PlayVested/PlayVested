@@ -1,12 +1,6 @@
 <% include ../partials/header %>
 
     <a href="/">Back</a>
-    <script>
-        function deleteConfirm() {
-            return confirm(`Are you sure you want to delete this friend?`);
-        }
-    </script>
-
     <div>
         <div class="page-header">
             <h2>
@@ -20,7 +14,8 @@
             </h2>
         </div>
         <div class="item-action">
-            <form class="delete-item" action="/users/<%= user._id %>?_method=DELETE" method="POST">
+            <form class="delete-item" action="/users/<%= user._id %>?_method=DELETE" method="POST"
+                onsubmit="return confirm(`Are you sure you want to delete your account?`)">
                 <button class="btn btn-danger">Delete</button>
             </form>
         </div>
@@ -28,6 +23,33 @@
             <a href="/users/<%= user._id %>/edit" class="btn btn-warning">Edit</a>
         </div>
     
+        <div class="row">
+            <div class="col">
+                <h2 class="page-header">Records</h2>
+            </div>
+        </div>
+        <div class="container">
+            <% records.forEach((record) => { %>
+                <div class="row">
+                    <div class="col">
+                        <%= new Date(record.createdAt).toDateString() %>
+                    </div>
+                    <div class="col">
+                        <%= (record.gameID ? record.gameID.name : 'UNKNOWN') %>
+                    </div>
+                    <div class="col">
+                        $<%= record.amountEarned %>
+                    </div>
+                    <div class="col">
+                        <form class="delete-item" action="/records/<%= record._id %>?_method=DELETE" method="POST"
+                            onsubmit="return confirm(`Are you sure you want to delete this record?`)">
+                            <button class="btn btn-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+
         <div class="row">
             <div class="col">
                 <h2 class="page-header">Friends</h2>
@@ -45,7 +67,8 @@
                         </a>
                     </div>
                     <div class="col">
-                            <form class="delete-item" action="/users/<%= user._id %>/friends/<%= friend._id %>?_method=DELETE" method="POST" onsubmit="return deleteConfirm()">
+                        <form class="delete-item" action="/users/<%= user._id %>/friends/<%= friend._id %>?_method=DELETE" method="POST"
+                            onsubmit="return confirm(`Are you sure you want to delete this friend?`)">
                             <button class="btn btn-danger">Delete</button>
                         </form>
                     </div>

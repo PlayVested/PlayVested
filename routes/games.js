@@ -6,6 +6,7 @@ const { isLoggedIn, isOwner } = require('../middleware/misc');
 
 const Developer = require('../models/developer');
 const Game = require('../models/game');
+const Record = require('../models/record');
 
 // 'new' route
 router.get('/new', isLoggedIn, (req, res) => {
@@ -44,7 +45,15 @@ router.get('/:gameID', cacheGame, (req, res) => {
             req.flash(`error`, `Error getting developer: ${err.message}`);
             res.redirect(`back`);
         } else {
-            res.render('games/show', { developer, isOwner: isOwner(req.user, developer) });
+            Record.find({gameID: req.params.gameID}).sort({createdAt: 'desc'}).exec((recordErr, records) => {
+                if (recordErr) {
+                    console.error(`Error: ${recordErr}`);
+                    req.flash(`error`, `Error getting records: ${err.message}`);
+                    res.redirect('back');
+                } else {
+                    res.render('games/show', { developer, records, isOwner: isOwner(req.user, developer) });
+                }
+            });
         }
     });
 });
@@ -89,8 +98,11 @@ router.delete('/:gameID', canEditGame, (req, res) => {
                 req.flash(`success`, `Game deleted`);
             }
 
-            return res.redirect('/games');
+            return res.redirect('back');
         });
+    } else {
+        req.flash(`error`, `Failed to get game`);
+        return res.redirect('back');
     }
 });
 

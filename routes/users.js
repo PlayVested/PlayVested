@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router({mergeParams: true});
 
 const { isLoggedIn } = require('../middleware/misc');
+const Player = require('../models/player');
+const Record = require('../models/record');
 
 // 'index' route
 // no reason to view all users on their own, redirect to home page
@@ -24,10 +26,23 @@ router.post('/', (req, res) => {
 // 'show' route
 router.get('/:userID', isLoggedIn, (req, res) => {
     if (req.user._id.equals(req.params.userID)) {
-        return res.render('users/show');
+        Player.find({ownerID: req.user._id}, (playerErr, players) => {
+            if (playerErr) {
+                console.error(`Error: ${playerErr}`);
+                res.redirect('back');
+            } else {
+                const playerIDs = players.map(player => player._id);
+                Record.find({playerID: playerIDs}).sort({createdAt: 'desc'}).populate('gameID').exec((recordErr, records) => {
+                    if (recordErr) {
+                        console.error(`Error: ${recordErr}`);
+                        res.redirect('back');
+                    } else {
+                        return res.render('users/show', { records });
+                    }
+                });
+            }
+        });
     }
-
-    res.redirect('back');
 });
 
 // 'edit' route
@@ -57,18 +72,19 @@ router.put('/:userID', isLoggedIn, (req, res) => {
 // 'delete' route
 router.delete('/:userID', isLoggedIn, (req, res) => {
     if (req.user._id.equals(req.params.userID)) {
-        if (window.confirm(`This will permanently delete your account, are you sure?`)) {
-            req.user.remove((err) => {
-                if (err) {
-                    console.error(`Error: ${err.message}`);
-                    req.flash(`error`, `Failed to remove user: ${err.message}`);
-                } else {
-                    req.flash(`success`, `User deleted`);
-                }
-            });
-        } else {
-            res.redirect(`back`);
-        }
+        req.user.remove((err) => {
+            if (err) {
+                console.error(`Error: ${err.message}`);
+                req.flash(`error`, `Failed to remove user: ${err.message}`);
+            } else {
+                req.flash(`success`, `User deleted`);
+            }
+
+            return res.redirect('/');
+        });
+    } else {
+        req.flash(`error`, `Failed to get user`);
+        return res.redirect('back');
     }
 });
 

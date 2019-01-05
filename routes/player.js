@@ -144,16 +144,22 @@ router.put('/:playerID', canEditPlayer, (req, res) => {
 
 // 'delete' route
 router.delete('/:playerID', canEditPlayer, (req, res) => {
-    Player.findByIdAndDelete(req.body.playerID, (err, deletedPlayer) => {
-        if (err) {
-            console.error(`Error: ${err.message}`);
-            req.flash(`error`, `Failed to delete player: ${err.message}`);
-        } else {
-            req.flash(`success`, `Player deleted`);
-            res.status(200);
-            res.send(`Success`);
-        }
-    });
+    const { player } = res.locals;
+    if (player) {
+        player.remove((err) => {
+            if (err) {
+                console.error(`Error: ${err.message}`);
+                req.flash(`error`, `Failed to delete player: ${err.message}`);
+            } else {
+                req.flash(`success`, `Player deleted`);
+            }
+
+            return res.redirect('back');
+        });
+    } else {
+        req.flash(`error`, `Failed to get player`);
+        return res.redirect('back');
+    }
 });
 
 module.exports = router;

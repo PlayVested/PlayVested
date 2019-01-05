@@ -98,6 +98,9 @@ router.delete('/:developerID', canEditDeveloper, (req, res) => {
 
             return res.redirect('/developers');
         });
+    } else {
+        req.flash(`error`, `Failed to get developer`);
+        return res.redirect('back');
     }
 });
 

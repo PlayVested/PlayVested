@@ -64,19 +64,19 @@ router.put('/:allocationID', canEditAllocation, (req, res) => {
 router.delete('/:allocationID', canEditAllocation, (req, res) => {
     const { allocation } = res.locals;
     if (allocation) {
-        if (window.confirm(`This will permanently delete the allocation, are you sure?`)) {
-            allocation.remove((err) => {
-                if (err) {
-                    console.error(`Error: ${err.message}`);
-                    req.flash(`error`, `Failed to remove allocation: ${err.message}`);
-                } else {
-                    req.flash(`success`, `Allocation deleted`);
-                }
-            });
-            return res.redirect('/allocations');
-        } else {
+        allocation.remove((err) => {
+            if (err) {
+                console.error(`Error: ${err.message}`);
+                req.flash(`error`, `Failed to remove allocation: ${err.message}`);
+            } else {
+                req.flash(`success`, `Allocation deleted`);
+            }
+
             return res.redirect('back');
-        }
+        });
+    } else {
+        req.flash(`error`, `Failed to get allocation`);
+        return res.redirect('back');
     }
 });
 

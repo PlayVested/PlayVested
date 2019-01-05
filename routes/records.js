@@ -6,11 +6,6 @@ const { canEditRecord } = require('../middleware/record');
 const Game = require('../models/game');
 const Record = require('../models/record');
 
-// 'index' route
-// router.get('/', (req, res) => {
-//     res.render('records/index');
-// });
-
 function findRecords(req, res, searchParams) {
     Record.find(searchParams, (err, foundRecords) => {
         if (err) {
@@ -166,19 +161,19 @@ router.put('/:recordID', canEditRecord, (req, res) => {
 router.delete('/:recordID', canEditRecord, (req, res) => {
     const { record } = res.locals;
     if (record) {
-        if (window.confirm(`This will permanently delete the record, are you sure?`)) {
-            record.remove((err) => {
-                if (err) {
-                    console.error(`Error: ${err.message}`);
-                    req.flash(`error`, `Failed to remove record: ${err.message}`);
-                } else {
-                    req.flash(`success`, `Record deleted`);
-                }
-            });
-            return res.redirect('/records');
-        } else {
+        record.remove((err) => {
+            if (err) {
+                console.error(`Error: ${err.message}`);
+                req.flash(`error`, `Failed to remove record: ${err.message}`);
+            } else {
+                req.flash(`success`, `Record deleted`);
+            }
+
             return res.redirect('back');
-        }
+        });
+    } else {
+        req.flash(`error`, `Failed to get record`);
+        return res.redirect('back');
     }
 });
 

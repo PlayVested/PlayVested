@@ -1,12 +1,6 @@
 <% include ../partials/header %>
 
     <a href="/developers">Back</a>
-    <script>
-        function deleteConfirm() {
-            return confirm(`Are you sure you want to delete this developer?`);
-        }
-    </script>
-
     <div>
         <div class="page-header">
             <% if (isOwner) { %>
@@ -36,7 +30,8 @@
         </div>
         <% if (isOwner) { %>
             <div class="item-action">
-                <form class="delete-item" action="/developers/<%= developer._id %>?_method=DELETE" method="POST">
+                <form class="delete-item" action="/developers/<%= developer._id %>?_method=DELETE" method="POST"
+                    onsubmit="return confirm(`Are you sure you want to delete this developer?`)">
                     <button class="btn btn-danger">Delete</button>
                 </form>
             </div>
