@@ -1,4 +1,5 @@
 const { isLoggedIn } = require('./misc');
+const Player = require('../models/player');
 
 module.exports = {
     /**

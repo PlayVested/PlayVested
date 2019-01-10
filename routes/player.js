@@ -2,7 +2,7 @@ const express = require('express');
 const passport = require('passport');
 const router = express.Router({mergeParams: true});
 
-const { canEditPlayer } = require('../middleware/player');
+const { cachePlayer, canEditPlayer } = require('../middleware/player');
 
 const Charity = require('../models/charity');
 const Allocation = require('../models/allocation');
@@ -126,6 +126,18 @@ router.post('/:playerID/link', passport.authenticate('local'), (req, res) => {
 // 'show' route
 router.get('/:playerID', canEditPlayer, (req, res) => {
     res.render('players/show');
+});
+
+// determine if the player has a linked user account
+router.get('/:playerID/is-linked', cachePlayer, (req, res) => {
+    const { player } = res.locals;
+    if (player) {
+        res.status(200);
+        return res.send(!!player.ownerID);
+    }
+
+    res.status(404);
+    res.send(false);
 });
 
 // 'edit' route
