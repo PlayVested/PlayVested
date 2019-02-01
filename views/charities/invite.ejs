@@ -1,0 +1,20 @@
+<% include ../partials/header %>
+
+    <div style="text-align:center">
+        <h1>Invite User</h1>
+    </div>
+
+    <div class="new-item-form">
+        <form class="form-inline" name="editForm" action="/charities/<%= charity._id %>/invite" method="POST">
+            <div class="form-group">
+                <input class="form-control" type="email" name="email" placeholder="Email" autofocus>
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="textarea" name="note" placeholder="Optional note">
+            </div>
+
+            <% include ../partials/formButtons %>
+        </form>
+    </div>
+
+<% include ../partials/footer %>
