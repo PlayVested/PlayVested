@@ -17,4 +17,8 @@ const CharitySchema = new mongoose.Schema({
   timestamps: true
 });
 
+CharitySchema.methods.getDisplayName = function getDisplayName() {
+    return this.organizationName;
+};
+
 module.exports = mongoose.model("Charity", CharitySchema);

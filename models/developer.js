@@ -16,4 +16,8 @@ const DeveloperSchema = new mongoose.Schema({
   timestamps: true
 });
 
+DeveloperSchema.methods.getDisplayName = function getDisplayName() {
+    return this.companyName;
+};
+
 module.exports = mongoose.model("Developer", DeveloperSchema);

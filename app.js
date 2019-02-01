@@ -17,6 +17,7 @@ const charitiesRoutes = require('./routes/charities');
 const indexRoutes = require('./routes/index');
 const developerRoutes = require('./routes/developers');
 const gameRoutes = require('./routes/games');
+const invitationRoutes = require('./routes/invitations');
 const playerRoutes = require('./routes/player');
 const recordRoutes = require('./routes/records');
 const userRoutes = require('./routes/users');
@@ -50,6 +51,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 // fall back on a local DB if one isn't provided through an env variable
 const dbURL = process.env.DATABASEURL || 'mongodb://localhost/PlayVested';
 mongoose.connect(dbURL, { useNewUrlParser: true }); // add ':27017' to the address if it needs a port
+mongoose.Promise = Promise;
 
 // maybe populate the DB with some starting data
 seedData();
@@ -78,6 +80,7 @@ app.use('/allocations', allocationRoutes);
 app.use('/charities', charitiesRoutes);
 app.use('/developers', developerRoutes);
 app.use('/games', gameRoutes);
+app.use('/invitations', invitationRoutes);
 app.use('/players', playerRoutes);
 app.use('/records', recordRoutes);
 app.use('/users', userRoutes);

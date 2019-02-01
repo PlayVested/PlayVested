@@ -1,5 +1,5 @@
 const Developer = require('../models/developer');
-const { isLoggedIn } = require('./misc');
+const {isLoggedIn, isOwner } = require('./misc');
 
 module.exports = {
     /**
