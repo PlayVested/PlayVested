@@ -83,4 +83,20 @@ router.delete('/:charityID', canEditCharity, (req, res) => {
     }
 });
 
+// 'delete owner' route
+router.delete('/:charityID/owner/:ownerID', canEditCharity, (req, res) => {
+    const {charity} = res.locals;
+    if (charity) {
+        const {ownerID} = req.params;
+        for (let i = 0; i < charity.ownerID.length; i++) {
+            if (charity.ownerID[i]._id.equals(ownerID)) {
+                charity.ownerID.splice(i, 1);
+                charity.save();
+            }
+        }
+    }
+
+    res.redirect('back');
+});
+
 module.exports = router;

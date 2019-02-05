@@ -40,5 +40,34 @@
             </div>
         <% } %>
     </div>
+    <div>
+        <% if (isOwner) { %>
+            <h2>
+                Owners:
+            </h2>
+            <div class="row">
+                <% charity.ownerID.forEach((owner) => { %>
+                    <div class="col-sm-5">
+                        <strong>
+                            <%= owner.getDisplayName() %>
+                        </strong>
+                    </div>
+                    <div class="col-sm-5">
+                        <strong>
+                            <%= owner.username %>
+                        </strong>
+                    </div>
+                    <div class="col-sm-2">
+                        <% if (charity.ownerID.length > 1) { %>
+                            <form class="delete-item" action="/charities/<%= charity._id %>/owner/<%= owner._id %>?_method=DELETE" method="POST"
+                                onsubmit="return confirm('Are you sure you want to remove <%= owner.getDisplayName() %> as an owner?');">
+                                <button type="submit" class="w3-button w3-red"><i class="w3-trash w3-small"></i></button>
+                            </form>
+                        <% } %>
+                    </div>
+                <% }); %>
+            </div>
+        <% } %>
+    </div>
 
 <% include ../partials/footer %>

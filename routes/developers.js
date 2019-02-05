@@ -104,4 +104,20 @@ router.delete('/:developerID', canEditDeveloper, (req, res) => {
     }
 });
 
+// 'delete owner' route
+router.delete('/:developerID/owner/:ownerID', canEditDeveloper, (req, res) => {
+    const {developer} = res.locals;
+    if (developer) {
+        const {ownerID} = req.params;
+        for (let i = 0; i < developer.ownerID.length; i++) {
+            if (developer.ownerID[i]._id.equals(ownerID)) {
+                developer.ownerID.splice(i, 1);
+                developer.save();
+            }
+        }
+    }
+
+    res.redirect('back');
+});
+
 module.exports = router;

@@ -6,7 +6,7 @@ module.exports = {
      * Passes if the charity referenced in req is found
      */
     cacheCharity: (req, res, next) => {
-        Charity.findById(req.params.charityID, (err, charity) => {
+        Charity.findById(req.params.charityID).populate('ownerID').exec((err, charity) => {
             if (err) {
                 console.error(`Error: ${err.message}`);
                 req.flash(`error`, `Charity not found: ${err.message}`);

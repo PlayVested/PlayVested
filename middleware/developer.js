@@ -6,7 +6,7 @@ module.exports = {
      * Passes if the developer referenced in req is found
      */
     cacheDeveloper: (req, res, next) => {
-        Developer.findById(req.params.developerID, (err, developer) => {
+        Developer.findById(req.params.developerID).populate('ownerID').exec((err, developer) => {
             if (err) {
                 console.error(`Error: ${err.message}`);
                 req.flash(`error`, `Developer not found: ${err.message}`);

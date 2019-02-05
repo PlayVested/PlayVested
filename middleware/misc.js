@@ -12,7 +12,7 @@ module.exports = {
         if (user && model && model.ownerID) {
             for (let i = 0; i < model.ownerID.length; i++) {
                 const ownerID = model.ownerID[i];
-                if (user._id.equals(ownerID)) {
+                if (user._id.equals(ownerID._id)) {
                     return true;
                 }
             }
