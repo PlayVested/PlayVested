@@ -1,11 +1,25 @@
 <% include ./partials/header %>
 
-    <h1>Login Page</h1>
+    <h1>Login</h1>
 
     <form action="/login" method="POST">
-        <input type="text" name="username" placeholder="email" autofocus>
-        <input type="password" name="password" placeholder="password">
-        <button>Login</button>
+        <div class="row">
+            <div class="col-sm-3 form-input-container">
+                <input type="text" name="username" placeholder="email" class="full-width" autofocus>
+            </div>
+            <div class="col-sm-3 form-input-container">
+                <input type="password" name="password" placeholder="password" class="full-width">
+            </div>
+            <div class="col-sm-2 text-right form-input-container">
+                <button class="full-width">Login</button>
+            </div>
+        </div>
     </form>
+
+    <div class="row">
+        <div class="col-sm-8 text-right">
+            <a href="/forgot_password">Forgot Password</a>
+        </div>
+    </div>
 
 <% include ./partials/footer %>

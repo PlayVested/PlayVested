@@ -1,4 +1,5 @@
 const express = require('express');
+const nodemailer = require('nodemailer');
 const passport = require('passport');
 const router = express.Router({mergeParams: true});
 
@@ -101,6 +102,73 @@ router.post('/login', passport.authenticate('local', {
             }
         });
     });
+});
+
+router.get('/forgot_password', (req, res) => {
+    res.render('forgot_password');
+});
+
+router.post('/forgot_password', (req, res) => {
+    User.findByUsername(req.body.username).then(
+        (foundUser) => {
+            if (!foundUser) {
+                req.flash(`error`, `No user associated with ${req.body.username}`);
+                return res.redirect('back');
+            }
+
+            const tempPassword = Math.random().toString(36).slice(-8);
+            foundUser.setPassword(tempPassword).then(() => {
+                foundUser.save();
+            });
+
+            var transporter = nodemailer.createTransport({
+                host: "smtp-mail.outlook.com", // hostname
+                secureConnection: false, // TLS requires secureConnection to be false
+                port: 587, // port for secure SMTP
+                tls: {
+                    ciphers: 'SSLv3'
+                },
+                auth: {
+                    user: process.env.NOREPLY_EMAIL,
+                    pass: process.env.NOREPLY_PW,
+                }
+            });
+
+            const mailOptions = {
+                from: 'noreply@playvested.com',
+                to: foundUser.username,
+                subject: `Reset password request`,
+                html: `
+                    <div>
+                        Please use the temporary password below to log in to your PlayVested account. You will need to set a new password when you log in.
+                    </div>
+                    <div>
+                        ${tempPassword}
+                    </div>
+                    <div>
+                        Please go to
+                        <a href="https://playvested.herokuapp.com">
+                            playvested.herokuapp.com
+                        </a> and sign in to update your account.
+                    </div>
+                `,
+            };
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    req.flash(`error`, `Failed to reset password: ${error}`);
+                    return res.redirect('back');
+                } else {
+                    req.flash(`success`, `Reset password email sent, please follow the directions to change your password`);
+                    return res.redirect(`/`);
+                }
+            });
+        },
+        (error) => {
+            console.error(`Error getting user to reset password: ${error}`);
+            res.redirect('/');
+        }
+    );
 });
 
 router.get('/logout', (req, res) => {

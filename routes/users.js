@@ -1,4 +1,5 @@
 const express = require('express');
+const passport = require('passport');
 const router = express.Router({mergeParams: true});
 
 const { isLoggedIn } = require('../middleware/misc');
@@ -91,19 +92,65 @@ router.get('/:userID/edit', isLoggedIn, (req, res) => {
     res.redirect('back');
 });
 
+function errorToString(err) {
+    return (err ? err.message : 'UNKNONWN');
+}
+
+function setPassword(foundUser, newPassword) {
+    return new Promise((resolve, reject) => {
+        foundUser.setPassword(newPassword).then(() => {
+            return resolve();
+        }).catch((err) => {
+            return reject(Error(`Error setting password: ${errorToString(err)}`));
+        });
+    });
+}
+
+function localAuth(req, res) {
+    return new Promise((resolve, reject) => {
+        passport.authenticate('local', (err, foundUser) => {
+            if (err) {
+                return reject(Error(`Error authenticating: ${errorToString(err)}`));
+            } else if (!foundUser) {
+                return reject(Error(`Old password is incorrect`));
+            } else {
+                return resolve(foundUser);
+            }
+        })(req, res);
+    });
+}
+
 // 'update' route
-router.put('/:userID', isLoggedIn, (req, res) => {
+router.put('/:userID', isLoggedIn, async (req, res) => {
     if (req.user._id.equals(req.params.userID)) {
         const { user } = res.locals;
-        req.body.email = req.body.username;
+
+        req.body.user.email = req.body.user.username;
         Object.assign(user, req.body.user);
-        user.save();
-        req.flash(`success`, `Updated user info`);
+
+        try {
+            if (req.body.oldPassword) {
+                if (req.body.confirmPassword && req.body.confirmPassword === req.body.password) {
+                    req.body.username = req.body.user.username;
+                    req.body.password = req.body.oldPassword;
+                    const foundUser = await localAuth(req, res);
+                    await setPassword(foundUser, req.body.confirmPassword);
+                } else {
+                    throw Error(`Passwords don't match`);
+                }
+            }
+
+            user.save();
+            req.flash(`success`, `Updated user info`);
+            return res.redirect('/');
+        } catch (err) {
+            req.flash(`error`, `Failed to update the password: ${errorToString(err)}`);
+        }
     } else {
-        req.flash(`error`, `Failed to update user info`);
+        req.flash(`error`, `User info doesn't match logged in account`);
     }
 
-    return res.redirect(`/`);
+    return res.redirect('back');
 });
 
 // 'delete' route

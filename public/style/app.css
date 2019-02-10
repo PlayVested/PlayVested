@@ -44,3 +44,11 @@
 .note-container {
     overflow: auto;
 }
+
+.full-width {
+    width: 100%;
+}
+
+.form-input-container {
+    padding: 5px;
+}
