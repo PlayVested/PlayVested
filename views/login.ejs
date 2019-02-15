@@ -5,10 +5,10 @@
     <form action="/login" method="POST">
         <div class="row">
             <div class="col-sm-3 form-input-container">
-                <input type="text" name="username" placeholder="email" class="full-width" autofocus>
+                <input type="text" name="username" placeholder="email" value="<%= username %>" class="full-width" autofocus>
             </div>
             <div class="col-sm-3 form-input-container">
-                <input type="password" name="password" placeholder="password" class="full-width">
+                <input type="password" name="password" placeholder="password" value="<%= password %>" class="full-width">
             </div>
             <div class="col-sm-2 text-right form-input-container">
                 <button class="full-width">Login</button>

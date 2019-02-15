@@ -86,7 +86,7 @@ router.get('/:userID', isLoggedIn, (req, res) => {
 // 'edit' route
 router.get('/:userID/edit', isLoggedIn, (req, res) => {
     if (req.user._id.equals(req.params.userID)) {
-        return res.render('users/edit');
+        return res.render('users/edit', {oldPassword: req.query.oldPassword});
     }
 
     res.redirect('back');
@@ -98,7 +98,7 @@ function errorToString(err) {
 
 function setPassword(foundUser, newPassword) {
     return new Promise((resolve, reject) => {
-        foundUser.setPassword(newPassword).then(() => {
+        return foundUser.setPassword(newPassword).then(() => {
             return resolve();
         }).catch((err) => {
             return reject(Error(`Error setting password: ${errorToString(err)}`));
@@ -134,7 +134,12 @@ router.put('/:userID', isLoggedIn, async (req, res) => {
                     req.body.username = req.body.user.username;
                     req.body.password = req.body.oldPassword;
                     const foundUser = await localAuth(req, res);
-                    await setPassword(foundUser, req.body.confirmPassword);
+                    if (!foundUser._id.equals(user._id)) {
+                        throw Error(`User doesn't match`);
+                    }
+
+                    await setPassword(user, req.body.confirmPassword);
+                    user.flags.resetPassword = false;
                 } else {
                     throw Error(`Passwords don't match`);
                 }

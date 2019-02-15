@@ -12,6 +12,9 @@ const UserSchema = new mongoose.Schema({
             ref: "User"
          }
     ],
+    flags: {
+        resetPassword: Boolean,
+    },
 },
 {
   timestamps: true

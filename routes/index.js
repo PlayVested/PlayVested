@@ -37,7 +37,7 @@ router.post('/register', (req, res) => {
 });
 
 router.get('/login', (req, res) => {
-    res.render('login');
+    res.render('login', {username: req.query.username || '', password: req.query.password || ''});
 });
 
 router.post('/login', passport.authenticate('local', {
@@ -45,11 +45,18 @@ router.post('/login', passport.authenticate('local', {
 }), (req, res) => {
     // cache the user just in case anything happens to the session while
     // this is processing in the background
-    const user = req.user;
+    const {user} = req;
 
-    // go ahead and start the process of moving to the home page
-    // the rest of this can happen async in the background
-    res.redirect('/');
+    if (user.flags.resetPassword) {
+        // if they are working with a temp password, send them to the edit user
+        // page and fill in the old password for them
+        req.flash(`success`, `Please create a new password`);
+        res.redirect(`/users/${user._id}/edit?oldPassword=${req.body.password}`);
+    } else {
+        // go ahead and start the process of moving to the home page
+        // the rest of this can happen async in the background
+        res.redirect('/');
+    }
 
     // check if they have any pending invitations
     Invitation.find({email: user.username}, (err, invitations) => {
@@ -118,6 +125,7 @@ router.post('/forgot_password', (req, res) => {
 
             const tempPassword = Math.random().toString(36).slice(-8);
             foundUser.setPassword(tempPassword).then(() => {
+                foundUser.flags.resetPassword = true;
                 foundUser.save();
             });
 
@@ -147,7 +155,7 @@ router.post('/forgot_password', (req, res) => {
                     </div>
                     <div>
                         Please go to
-                        <a href="https://playvested.herokuapp.com">
+                        <a href="https://playvested.herokuapp.com/login?username=${foundUser.username}&password=${tempPassword}">
                             playvested.herokuapp.com
                         </a> and sign in to update your account.
                     </div>
