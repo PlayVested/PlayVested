@@ -50,7 +50,7 @@ router.post('/login', passport.authenticate('local', {
     if (user.flags.resetPassword) {
         // if they are working with a temp password, send them to the edit user
         // page and fill in the old password for them
-        req.flash(`success`, `Please create a new password`);
+        req.flash(`error`, `Please create a new password`);
         res.redirect(`/users/${user._id}/edit?oldPassword=${req.body.password}`);
     } else {
         // go ahead and start the process of moving to the home page
