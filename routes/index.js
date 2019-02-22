@@ -1,4 +1,5 @@
 const express = require('express');
+const fs = require('fs');
 const nodemailer = require('nodemailer');
 const passport = require('passport');
 const router = express.Router({mergeParams: true});
@@ -10,7 +11,26 @@ const User = require('../models/user');
 
 // index route
 router.get('/', (req, res) => {
-    res.render('home');
+    let files = [];
+    if (req.user) {
+        files = [
+            {
+                filename: 'download/DemoStandAlone.zip',
+                desc: 'Sample Unity game',
+            },
+            {
+                filename: 'download/DemoUnity.zip',
+                desc: 'Unity project for sample game',
+            },
+        ];
+
+        files.forEach((file) => {
+            const stats = fs.statSync('public/' + file.filename);
+            file.date = stats.mtime.toLocaleDateString();
+        });
+    }
+
+    res.render('home', {files});
 });
 
 // show signup form
