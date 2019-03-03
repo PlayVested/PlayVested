@@ -1,8 +1,6 @@
 rmdir DemoStandAlone /S /Q
 rmdir DemoUnity /S /Q
 
-exit
-
 mkdir ".\DemoStandAlone"
 xcopy /E /Y "..\..\..\PlayVestedUnity\Demo Game\Build\PC" ".\DemoStandAlone"
 mkdir ".\DemoUnity\Assets"
