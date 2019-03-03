@@ -41,14 +41,14 @@ router.post('/', (req, res) => {
         console.log(`Found Game: ${foundGame}`);
 
         // next make sure the charity they want to support exists
-        console.log(`Looking for charity: ${req.body.charityID}`);
-        Charity.findById(req.body.charityID, (err, foundCharity) => {
-            if (err || !foundCharity) {
+        Charity.find({organizationName: req.body.charityName}, (err, foundCharities) => {
+            if (err || !foundCharities || foundCharities.length != 1) {
                 console.error(`Warning, charity not found`);
                 res.status(400);
                 res.send('Failed to find the charity');
                 return;
             }
+            const foundCharity = foundCharities[0];
             console.log(`Found Charity: ${foundCharity}`);
 
             // everything looks good, go ahead and create a new player
