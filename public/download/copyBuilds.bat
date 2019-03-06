@@ -1,5 +1,5 @@
-rmdir DemoStandAlone /S /Q
-rmdir DemoUnity /S /Q
+REM rmdir DemoStandAlone /S /Q
+REM rmdir DemoUnity /S /Q
 
 mkdir ".\DemoStandAlone"
 xcopy /E /Y "..\..\..\PlayVestedUnity\Demo Game\Build\PC" ".\DemoStandAlone"
