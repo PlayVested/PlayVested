@@ -7,6 +7,7 @@ const router = express.Router({mergeParams: true});
 const Charity = require('../models/charity');
 const Developer = require('../models/developer');
 const Invitation = require('../models/invitation');
+const Player = require('../models/player');
 const User = require('../models/user');
 
 // index route
@@ -47,12 +48,24 @@ router.post('/register', (req, res) => {
             return res.redirect('/register');
         }
 
-        // new user has been created
-        req.body.username = req.body.user.username;
-        passport.authenticate('local', {
-            successRedirect: '/',
-            failureRedirect: '/register',
-        })(req, res, () => {});
+        // make sure we have a default player to associate with the user
+        // it will hold allocations not associated with games
+        Player.create({ownerID: newUser._id}, (playerErr, createdPlayer) => {
+            if (playerErr) {
+                newUser.remove();
+                return res.redirect('/register');
+            } else {
+                // new user has been created
+                newUser.defaultPlayer = createdPlayer;
+                newUser.save();
+
+                req.body.username = req.body.user.username;
+                passport.authenticate('local', {
+                    successRedirect: '/',
+                    failureRedirect: '/register',
+                })(req, res, () => {});
+            }
+        });
     });
 });
 
@@ -76,6 +89,32 @@ router.post('/login', passport.authenticate('local', {
         // go ahead and start the process of moving to the home page
         // the rest of this can happen async in the background
         res.redirect('/');
+    }
+
+    // make sure the user has a default player associated with them
+    if (!req.user.defaultPlayer) {
+        Player.findOne({ownerID: req.user._id, gameID: undefined}, (playerErr, foundPlayer) => {
+            if (playerErr) {
+                console.error(`Error: ${playerErr}`);
+                return;
+            } else if (!foundPlayer) {
+                Player.create({ownerID: req.user._id}, (createErr, createdPlayer) => {
+                    if (createErr) {
+                        console.error(`Error: ${createErr}`);
+                        return;
+                    } else if (!createdPlayer) {
+                        console.error(`Failed to create default player`);
+                        return;
+                    }
+
+                    req.user.defaultPlayer = createdPlayer;
+                    req.user.save();
+                });
+            } else {
+                req.user.defaultPlayer = foundPlayer;
+                req.user.save();
+            }
+        });
     }
 
     // check if they have any pending invitations

@@ -6,7 +6,7 @@ module.exports = {
      * Passes if the allocation referenced in req is found
      */
     cacheAllocation: (req, res, next) => {
-        Allocation.findById(req.params.allocationID, (err, allocation) => {
+        Allocation.findById(req.params.allocationID).populate('playerID').exec((err, allocation) => {
             if (err) {
                 console.error(`Error: ${err.message}`);
                 req.flash(`error`, `Allocation not found: ${err.message}`);
@@ -27,7 +27,7 @@ module.exports = {
         isLoggedIn(req, res, () => {
             module.exports.cacheAllocation(req, res, () => {
                 const { allocation } = res.locals;
-                if (allocation && res.locals.player._id.equals(allocation.playerID)) {
+                if (allocation && allocation.playerID && res.locals.user && res.locals.user._id.equals(allocation.playerID.ownerID)) {
                     return next();
                 }
 

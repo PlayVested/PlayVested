@@ -52,3 +52,9 @@
 .form-input-container {
     padding: 5px;
 }
+
+.form-inline { 
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+}

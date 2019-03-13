@@ -2,15 +2,17 @@ const express = require('express');
 const router = express.Router({mergeParams: true});
 
 const { canEditAllocation } = require('../middleware/allocation');
+const { isLoggedIn } = require('../middleware/misc');
 
 const Allocation = require('../models/allocation');
+const Player = require('../models/player');
 
 // 'create' route
 router.post('/', (req, res) => {
     const newAllocation = {
-        playerID: res.locals.player._id,
+        playerID: req.body.playerID,
         charityID: req.body.charityID,
-        percentage: Number(100.0),
+        percentage: req.body.percentage || Number(100.0),
     };
 
     Allocation.create(newAllocation, (err, createdAllocation) => {
@@ -20,7 +22,7 @@ router.post('/', (req, res) => {
         } else {
             console.log('Created: ' + createdAllocation);
             req.flash(`success`, `Successfully created allocation!`);
-            res.redirect(`/allocations/${createdAllocation._id}`);
+            res.redirect(`/users/${req.user._id}`);
         }
     });
 });
@@ -33,6 +35,55 @@ router.get('/:allocationID', canEditAllocation, (req, res) => {
 // 'edit' route
 router.get('/:allocationID/edit', canEditAllocation, (req, res) => {
     return res.render('allocations/edit');
+});
+
+// 'bulk update' route
+router.put('/bulk', isLoggedIn, (req, res) => {
+    const { allocations } = req.body;
+    const total = Object.values(allocations).reduce((total, num) => parseInt(total) + parseInt(num));
+
+    Allocation.find({'playerID': req.user.defaultPlayer}, (allocErr, foundAllocations) => {
+        if (allocErr) {
+            console.error(`Error: ${allocErr.message}`);
+            req.flash(`error`, `Error finding allocations: ${allocErr.message}`);
+        } else {
+            Object.keys(allocations).forEach((allocID) => {
+                const pct = Math.round(100.0 * allocations[allocID] / total);
+                if (!foundAllocations || !foundAllocations.find((foundAlloc) => {
+                    if (foundAlloc._id.equals(allocID)) {
+                        if (foundAlloc.percentage !== pct) {
+                            if (pct > 0) {
+                                foundAlloc.percentage = pct;
+                                foundAlloc.save();
+                            } else {
+                                foundAlloc.remove();
+                            }
+                        }
+                        return true;
+                    }
+
+                    return false
+                })) {
+                    // didn't find the allocation, create a new one if it is positive
+                    if (pct > 0) {
+                        const newAlloc = {
+                            playerID: req.user.defaultPlayer._id,
+                            charityID: allocID,
+                            percentage: pct
+                        };
+                        Allocation.create(newAlloc, (createErr, createdAlloc) => {
+                            if (createErr) {
+                                console.error(`Error: ${createErr.message}`);
+                                req.flash(`error`, `Error creating allocations: ${createErr.message}`);
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+        res.redirect('back');
+    });
 });
 
 // 'update' route
