@@ -53,7 +53,6 @@ router.post('/', (req, res) => {
 
             // everything looks good, go ahead and create a new player
             const newPlayer = {
-                ownerID: req.user._id,
                 gameID: foundGame._id,
             };
 
@@ -95,6 +94,7 @@ router.post('/:playerID/link', passport.authenticate('local'), (req, res) => {
     // we don't want to leave them logged in on accident
     // so just store the user ID and log them out now
     const userID = req.user._id;
+    const defaultPlayer = req.user.defaultPlayer;
     req.logout();
 
     const playerID = req.params.playerID;
@@ -119,7 +119,7 @@ router.post('/:playerID/link', passport.authenticate('local'), (req, res) => {
             foundPlayer.save();
 
             // transfer allocations over to the default player for this user
-            Allocation.find({'playerID': [foundPlayer, req.user.defaultPlayer]}, (errAlloc, foundAllocations) => {
+            Allocation.find({'playerID': [foundPlayer, defaultPlayer]}, (errAlloc, foundAllocations) => {
                 if (errAlloc) {
                     Console.err(`Failed to find allocations: ${errAlloc}`);
                     res.status(404);
@@ -131,7 +131,7 @@ router.post('/:playerID/link', passport.authenticate('local'), (req, res) => {
                 let total = 0;
                 foundAllocations.forEach((alloc) => {
                     // split them into new and existing allocations
-                    if (alloc.playerID.equals(req.user.defaultPlayer._id)) {
+                    if (alloc.playerID.equals(defaultPlayer._id)) {
                         existingAllocs[alloc.charityID] = alloc;
                     } else {
                         newAllocs[alloc.charityID] = alloc;
@@ -151,7 +151,7 @@ router.post('/:playerID/link', passport.authenticate('local'), (req, res) => {
                     } else {
                         // copy over the new allocation and reassign to the default player associated with the active user
                         existingAllocs[charityID] = newAllocs[charityID];
-                        existingAllocs[charityID].playerID = req.user.defaultPlayer;
+                        existingAllocs[charityID].playerID = defaultPlayer;
                     }
                 });
 

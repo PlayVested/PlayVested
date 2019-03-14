@@ -13,38 +13,35 @@ function findRecords(req, res, searchParams) {
             res.status(400);
             res.send('Error running query');
             return;
-        } else if (foundRecords.length) {
-            // support filtering out by date
-            let totals = {
-                lifetime: 0,
-            };
-
-            var filteredDate = new Date();
-            if (req.query.previousDays || req.query.previousWeeks || req.query.previousMonths) {
-                totals.filtered = 0;
-                if (req.query.previousDays) {
-                    filteredDate.setDate(filteredDate.getDate() - req.query.previousDays);
-                } else if (req.query.previousWeeks) {
-                    filteredDate.setDate(filteredDate.getDate() - req.query.previousWeeks * 7);
-                } else if (req.query.previousMonths) {
-                    filteredDate.setMonth(filteredDate.getMonth() - req.query.previousMonths);
-                }
-            }
-
-            foundRecords.forEach((record) => {
-                totals.lifetime += record.amountEarned;
-                if (record.createdAt >= filteredDate) {
-                    totals.filtered += record.amountEarned;
-                }
-            });
-
-            res.status(200);
-            res.send(totals);
-            return;
         }
 
-        res.status(404);
-        res.send('Failed to find records');
+        // support filtering out by date
+        let totals = {
+            lifetime: 0,
+        };
+
+        var filteredDate = new Date();
+        if (req.query.previousDays || req.query.previousWeeks || req.query.previousMonths) {
+            totals.filtered = 0;
+            if (req.query.previousDays) {
+                filteredDate.setDate(filteredDate.getDate() - req.query.previousDays);
+            } else if (req.query.previousWeeks) {
+                filteredDate.setDate(filteredDate.getDate() - req.query.previousWeeks * 7);
+            } else if (req.query.previousMonths) {
+                filteredDate.setMonth(filteredDate.getMonth() - req.query.previousMonths);
+            }
+        }
+
+        foundRecords.forEach((record) => {
+            totals.lifetime += record.amountEarned;
+            if (record.createdAt >= filteredDate) {
+                totals.filtered += record.amountEarned;
+            }
+        });
+
+        res.status(200);
+        res.send(totals);
+        return;
     });
 }
 
