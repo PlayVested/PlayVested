@@ -1,11 +1,15 @@
 <% include ../partials/header %>
 
-    <h1>Please provide the email of your friend</h1>
+    <h1>Please provide the email of your friend to send them an invite</h1>
 
     <div class="new-item-form">
-        <form action="/users/<%= user._id %>/friends" method="POST">
+        <form action="/friends" method="POST">
             <div class="form-group">
                 <input class="form-control" type="text" name="friend[email]" placeholder="email" autofocus>
+            </div>
+
+            <div class="form-group">
+                <input class="form-control" type="textarea" name="friend[note]" placeholder="Optional note">
             </div>
 
             <% include ../partials/formButtons %>

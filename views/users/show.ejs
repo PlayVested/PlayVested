@@ -145,19 +145,19 @@
                 <h2 class="page-header">Friends</h2>
             </div>
             <div class="col">
-                <a href="/users/<%= user._id %>/friends/new" class="btn btn-primary">Add Friend</a>
+                <a href="/friends/new" class="btn btn-primary">Add Friend</a>
             </div>
         </div>
         <div class="container">
             <% user.friends.forEach((friend) => { %>
                 <div class="row">
                     <div class="col">
-                        <a href="/users/<%= user._id %>/friends/<%= friend._id %>">
+                        <a href="/friends/<%= friend._id %>">
                             <%= friend.getDisplayName() %>
                         </a>
                     </div>
                     <div class="col">
-                        <form class="delete-item" action="/users/<%= user._id %>/friends/<%= friend._id %>?_method=DELETE" method="POST"
+                        <form class="delete-item" action="/friends/<%= friend._id %>?_method=DELETE" method="POST"
                             onsubmit="return confirm(`Are you sure you want to delete this friend?`)">
                             <button class="btn btn-danger">Delete</button>
                         </form>

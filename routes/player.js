@@ -89,58 +89,54 @@ router.post('/', (req, res) => {
     });
 });
 
-// 'link' route
-router.post('/:playerID/link', passport.authenticate('local'), (req, res) => {
-    // we don't want to leave them logged in on accident
-    // so just store the user ID and log them out now
-    const userID = req.user._id;
-    const defaultPlayer = req.user.defaultPlayer;
-    req.logout();
+function linkPlayerToUser(res, errPlayer, foundPlayer, userID, defaultPlayer) {
+    if (errPlayer) {
+        console.error(`Error while finding player: ${errPlayer}`);
+        res.status(404);
+        return res.send('Error while trying to find player');
+    } else if (!foundPlayer) {
+        console.error(`Failed to find player`);
+        res.status(404);
+        return res.send('Player not found');
+    }
 
-    const playerID = req.params.playerID;
-    Player.findById(playerID, (errPlayer, foundPlayer) => {
-        if (errPlayer) {
-            Console.err(`Failed to find player: ${errPlayer}`);
-            res.status(404);
-            return res.send('Player not found');
+    // Make sure the player isn't already associated with another user
+    if (foundPlayer.ownerID) {
+        if (foundPlayer.ownerID.equals(userID)) {
+            res.status(200);
+            return res.send('User already associated with that player');
         }
 
-        // Make sure the player isn't already associated with another user
-        if (foundPlayer.ownerID) {
-            if (foundPlayer.ownerID.equals(userID)) {
-                res.status(200);
-                return res.send('User already associated with that player');
+        res.status(409);
+        return res.send('Player is already owned by another user');
+    } else {
+        foundPlayer.ownerID = userID;
+        foundPlayer.save();
+
+        // transfer allocations over to the default player for this user
+        Allocation.find({'playerID': [foundPlayer, defaultPlayer]}, (errAlloc, foundAllocations) => {
+            if (errAlloc) {
+                console.error(`Failed to find allocations: ${errAlloc}`);
+                res.status(404);
+                return res.send('Player not found');
             }
 
-            res.status(409);
-            return res.send('Player is already owned by another user');
-        } else {
-            foundPlayer.ownerID = userID;
-            foundPlayer.save();
-
-            // transfer allocations over to the default player for this user
-            Allocation.find({'playerID': [foundPlayer, defaultPlayer]}, (errAlloc, foundAllocations) => {
-                if (errAlloc) {
-                    Console.err(`Failed to find allocations: ${errAlloc}`);
-                    res.status(404);
-                    return res.send('Player not found');
+            let existingAllocs = {};
+            let newAllocs = {};
+            let total = 0;
+            foundAllocations.forEach((alloc) => {
+                // split them into new and existing allocations
+                if (alloc.playerID.equals(defaultPlayer._id)) {
+                    existingAllocs[alloc.charityID] = alloc;
+                } else {
+                    newAllocs[alloc.charityID] = alloc;
                 }
 
-                let existingAllocs = {};
-                let newAllocs = {};
-                let total = 0;
-                foundAllocations.forEach((alloc) => {
-                    // split them into new and existing allocations
-                    if (alloc.playerID.equals(defaultPlayer._id)) {
-                        existingAllocs[alloc.charityID] = alloc;
-                    } else {
-                        newAllocs[alloc.charityID] = alloc;
-                    }
+                // keep track of the total so we can re-normalize
+                total += alloc.percentage;
+            });
 
-                    // keep track of the total so we can re-normalize
-                    total += alloc.percentage;
-                });
-
+            if (Object.keys(newAllocs).length) {
                 Object.keys(newAllocs).forEach((charityID) => {
                     if (existingAllocs[charityID]) {
                         // combine them if they exist in both
@@ -161,11 +157,50 @@ router.post('/:playerID/link', passport.authenticate('local'), (req, res) => {
                     existingAllocs[charityID].percentage = Math.round(100.0 * pct / total);
                     existingAllocs[charityID].save();
                 });
+            }
 
-                res.status(200);
-                return res.send('Success!');
-            });
+            res.status(200);
+            return res.send(String(foundPlayer._id));
+        });
+    }
+}
+
+// 'link' routes
+router.post('/link/:playerID', passport.authenticate('local'), (req, res) => {
+    // we don't want to leave them logged in on accident
+    // so just store the user ID and log them out now
+    const userID = req.user._id;
+    const defaultPlayer = req.user.defaultPlayer;
+    req.logout();
+
+    Player.findById(req.params.playerID, (errPlayer, foundPlayer) => {
+        return linkPlayerToUser(res, errPlayer, foundPlayer, userID, defaultPlayer);
+    });
+});
+
+router.post('/link/game/:gameID', passport.authenticate('local'), (req, res) => {
+    // we don't want to leave them logged in on accident
+    // so just store the user ID and log them out now
+    const userID = req.user._id;
+    const defaultPlayer = req.user.defaultPlayer;
+    req.logout();
+
+    // this version is used when a player hasn't been created yet
+    // first we create a new player, then link it to the active user
+    Game.findById(req.params.gameID, (errGame, foundGame) => {
+        if (errGame) {
+            console.error(`Failed to find game: ${errGame}`);
+            res.status(404);
+            return res.send('Game not found');
         }
+
+        const newPlayer = {
+            gameID: foundGame._id,
+        };
+
+        Player.create(newPlayer, (errPlayer, createdPlayer) => {
+            return linkPlayerToUser(res, errPlayer, createdPlayer, userID, defaultPlayer);
+        });
     });
 });
 

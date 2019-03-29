@@ -16,6 +16,7 @@ const allocationRoutes = require('./routes/allocations');
 const charitiesRoutes = require('./routes/charities');
 const indexRoutes = require('./routes/index');
 const developerRoutes = require('./routes/developers');
+const friendRoutes = require('./routes/friends');
 const gameRoutes = require('./routes/games');
 const invitationRoutes = require('./routes/invitations');
 const playerRoutes = require('./routes/player');
@@ -64,7 +65,7 @@ app.use((req, res, next) => {
     res.locals.success = req.flash('success');
 
     // pull the user from the DB so we can populate fields properly
-    User.findById((req.user || {})._id).exec((err, user) => {
+    User.findById((req.user || {})._id).populate('friends').exec((err, user) => {
         if (err) {
             req.flash(`error`, `Failed to populate user: ${err.message}`);
         } else {
@@ -79,6 +80,7 @@ app.use('/', indexRoutes);
 app.use('/allocations', allocationRoutes);
 app.use('/charities', charitiesRoutes);
 app.use('/developers', developerRoutes);
+app.use('/friends', friendRoutes);
 app.use('/games', gameRoutes);
 app.use('/invitations', invitationRoutes);
 app.use('/players', playerRoutes);

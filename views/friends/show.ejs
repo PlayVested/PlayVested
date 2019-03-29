@@ -2,47 +2,6 @@
 
     <a href="/users/<%= user._id %>">Back</a>
 
-    <h2>Recent ratings from <%= friendName %></h2>
-
-    <div class="container">
-        <% if (prevPage !== undefined) { %>
-            <div class="row">
-                <a href="<%= prevPage %>">Prev Page</a>
-            </div>
-        <% } %>
-
-        <div class="row">
-            <div class="col-lg-2"><h4>Date</h4></div>
-            <div class="col-lg-2"><h4>Rating</h4></div>
-            <div class="col-lg-3"><h4>Restaurant / Item</h4></div>
-            <div class="col-lg-5"><h4>Comment</h4></div>
-        </div>
-        <% recent.forEach((info) => { %>
-            <div class="row">
-                <div class="col-lg-2"><%= new Date(info.rating.createdAt).toLocaleDateString() %></div>
-                <div class="col-lg-2"><%= info.rating.rating %></div>
-                <div class="col-lg-3">
-                    <% if (info.restaurant) { %>
-                        <% if (info.menuItem) { %>
-                            <a href="/restaurants/<%= info.restaurant._id %>/menuItems/<%= info.menuItem._id %>">
-                                <%= info.menuItem.name %>
-                            </a>
-                        <% } else { %>
-                            <a href="/restaurants/<%= info.restaurant._id %>">
-                                <%= info.restaurant.name %>
-                            </a>
-                        <% } %>
-                    <% } %>
-                </div>
-                <div class="col-lg-5"><%= info.rating.comment %></div>
-            </div>
-        <% }); %>
-
-        <% if (nextPage !== undefined) { %>
-            <div class="row">
-                <a href="<%= nextPage %>">Next Page</a>
-            </div>
-        <% } %>
-    </div>
+    <h2>Comparison to friend goes here</h2>
 
 <% include ../partials/footer %>

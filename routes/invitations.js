@@ -1,5 +1,5 @@
+const emailUtil = require('../utils/email')
 const express = require('express');
-const nodemailer = require('nodemailer');
 const router = express.Router({mergeParams: true});
 
 const {canEditCharity} = require('../middleware/charity');
@@ -55,57 +55,38 @@ router.post('/:orgID', isLoggedIn, async (req, res) => {
         // send them an invite
         const invitation = {email: req.body.email, invitedBy: req.user._id, charityID: (foundCharity || {})._id, devID: (foundDev || {})._id};
         const options = {upsert: true};
-        Invitation.findOneAndUpdate(invitation, invitation, options, (err, createdInvitation) => {
+        Invitation.findOneAndUpdate(invitation, invitation, options, async (err, existingInvitation) => {
             if (err) {
                 req.flash(`error`, `Failed to create invitation: ${error}`);
                 return res.redirect('back');
-            } else if (createdInvitation) {
+            } else if (existingInvitation) {
                 // if this is valid it means it was already created
                 req.flash(`success`, `Invitation is already pending for the user`);
                 return res.redirect('back');
             } else {
-                var transporter = nodemailer.createTransport({
-                    host: "smtp-mail.outlook.com", // hostname
-                    secureConnection: false, // TLS requires secureConnection to be false
-                    port: 587, // port for secure SMTP
-                    tls: {
-                        ciphers: 'SSLv3'
-                    },
-                    auth: {
-                        user: process.env.NOREPLY_EMAIL,
-                        pass: process.env.NOREPLY_PW,
-                    }
-                });
-
-                const mailOptions = {
-                    from: 'noreply@playvested.com',
-                    to: req.body.email,
-                    subject: `Invitation to manage ${foundOrg.getDisplayName()}`,
-                    html: `
-                        <div>
-                            You have been invited to help manage ${foundOrg.getDisplayName()} by ${user.getDisplayName()}.
-                        </div>
-                        <div>
-                            ${req.body.note}
-                        </div>
-                        <div>
-                            Please go to
-                            <a href="https://playvested.herokuapp.com">
-                                playvested.herokuapp.com
-                            </a> and sign in or create an account to accept the invitation.
-                        </div>
-                    `,
-                };
-
-                transporter.sendMail(mailOptions, (error, info) => {
-                    if (error) {
-                        req.flash(`error`, `Failed to send invitation: ${error}`);
-                        return res.redirect('back');
-                    } else {
-                        req.flash(`success`, `Invitation sent!`);
-                        return res.redirect(`/${orgType}/${foundOrg._id}`);
-                    }
-                });
+                const subjectStr = `Invitation to manage ${foundOrg.getDisplayName()}`;
+                const bodyStr = `
+                    <div>
+                        You have been invited to help manage ${foundOrg.getDisplayName()} by ${user.getDisplayName()}.
+                    </div>
+                    <div>
+                        ${req.body.note}
+                    </div>
+                    <div>
+                        Please go to
+                        <a href="https://${process.env.BASE_WEB_ADDRESS}">
+                            ${process.env.BASE_WEB_ADDRESS}
+                        </a> and sign in or create an account to accept the invitation.
+                    </div>
+                `;
+                const retVal = await emailUtil.sendEmail(req.body.email, subjectStr, bodyStr);
+                if (retVal && retVal.error) {
+                    req.flash(`error`, `Failed to send invitation: ${error}`);
+                    return res.redirect('back');
+                } else {
+                    req.flash(`success`, `Invitation sent!`);
+                    return res.redirect(`/${orgType}/${foundOrg._id}`);
+                }
             }
         });
     });
