@@ -165,30 +165,6 @@ router.post('/login', passport.authenticate('local', {
                         });
                     }
                 });
-            } else {
-                User.findById(invitation.invitedBy, (err, foundUser) => {
-                    if (err) {
-                        req.flash(`error`, `Failed to get user for invitation: ${err.message}`);
-                    } else {
-                        if (foundUser.friends.indexOf(req.user._id) === -1) {
-                            foundUser.friends.push(req.user._id);
-                            foundUser.save();
-                        }
-                        if (req.user.friends.indexOf(foundUser._id) === -1) {
-                            req.user.friends.push(foundUser._id);
-                            req.user.save();
-                        }
-
-                        // invitation has been applied, go ahead and dump it
-                        invitation.remove((err) => {
-                            if (err) {
-                                req.flash(`error`, `Failed to remove invitation: ${err.message}`);
-                            } else {
-                                req.flash(`success`, `You are now friends with ${foundUser.getDisplayName()}`);
-                            }
-                        });
-                    }
-                });
             }
         });
     });

@@ -5,6 +5,7 @@ const router = express.Router({mergeParams: true});
 const { isLoggedIn } = require('../middleware/misc');
 const Allocation = require('../models/allocation');
 const Charity = require('../models/charity');
+const Invitation = require('../models/invitation');
 const Player = require('../models/player');
 const Record = require('../models/record');
 
@@ -56,7 +57,14 @@ router.get('/:userID', isLoggedIn, (req, res) => {
                                         console.error(`Error: ${charityErr}`);
                                         res.redirect('back');
                                     } else {
-                                        return res.render('users/show', { records, allocations, charities });
+                                        Invitation.find({email: req.user.email, charityID: null, devID: null}).populate('invitedBy').exec((invitationErr, invitations) => {
+                                            if (invitationErr) {
+                                                console.error(`Error: ${invitationErr}`);
+                                                res.redirect('back');
+                                            } else {
+                                                return res.render('users/show', {records, allocations, charities, invitations});
+                                            }
+                                        });
                                     }
                                 });
                             }

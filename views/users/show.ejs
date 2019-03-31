@@ -149,6 +149,21 @@
             </div>
         </div>
         <div class="container">
+            <% invitations.forEach((invitation) => { %>
+                <div class="row">
+                    <div class="col">
+                        <%= invitation.invitedBy.getDisplayName() %>
+                    </div>
+                    <div class="col">
+                        <a href="/friends/<%= invitation.invitedBy._id %>/accept">
+                            <i class="far fa-check-circle w3-large w3-text-green"> Accept </i>
+                        </a>
+                        <a href="/friends/<%= invitation.invitedBy._id %>/reject">
+                            <i class="far fa-trash-alt w3-large w3-text-red"> Reject </i>
+                        </a>
+                    </div>
+                </div>
+            <% }); %>
             <% user.friends.forEach((friend) => { %>
                 <div class="row">
                     <div class="col">

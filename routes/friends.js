@@ -47,7 +47,7 @@ router.post('/', isLoggedIn, (req, res) => {
                     </div>
                     <div>
                         Please go to
-                        <a href="https://${process.env.BASE_WEB_ADDRESS}">
+                        <a href="https://${process.env.BASE_WEB_ADDRESS}/login?username=${invitation.email}">
                             ${process.env.BASE_WEB_ADDRESS}
                         </a> and sign in or create an account to manage the invitation.
                     </div>
@@ -104,6 +104,57 @@ router.delete('/:friendID', isLoggedIn, (req, res) => {
 
         return res.redirect('back');
     });
+});
+
+function deleteInvitation(req, friendID) {
+    return new Promise((resolve, reject) => {
+        Invitation.findOne({email: req.user.email, invitedBy: friendID}, (invitationErr, foundInvitation) => {
+            foundInvitation.remove((err) => {
+                if (err) {
+                    reject(false);
+                } else {
+                    resolve(true);
+                }
+            });
+        });
+    });
+ }
+
+// 'accept' route
+router.get('/:friendID/accept', isLoggedIn, (req, res) => {
+    User.findById(req.params.friendID, async (err, foundUser) => {
+        if (err) {
+            req.flash(`error`, `Failed to get friend: ${err.message}`);
+        } else {
+            if (foundUser.friends.indexOf(req.user._id) === -1) {
+                foundUser.friends.push(req.user._id);
+                foundUser.save();
+            }
+            if (req.user.friends.indexOf(foundUser._id) === -1) {
+                req.user.friends.push(foundUser._id);
+                req.user.save();
+            }
+
+            // invitation has been applied, go ahead and dump it
+            const status = await deleteInvitation(req, foundUser._id);
+            if (status) {
+                req.flash(`success`, `You are now friends!`);
+            } else {
+                req.flash(`error`, `Failed to remove invitation: ${err.message}`);
+            }
+            res.redirect('back');
+        }
+    });
+});
+
+// 'reject' route
+router.get('/:friendID/reject', isLoggedIn, async (req, res) => {
+    // invitation has been applied, go ahead and dump it
+    const status = await deleteInvitation(req, req.params.friendID);
+    if (!status) {
+        req.flash(`error`, `Failed to remove invitation: ${err.message}`);
+    }
+    res.redirect('back');
 });
 
 module.exports = router;
