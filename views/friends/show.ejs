@@ -4,4 +4,37 @@
 
     <h2>Comparison to friend goes here</h2>
 
+    <div class="row">
+        <div class="col">
+            <%= user.getDisplayName() %>
+        </div>
+        <div class="col">
+            <%= friend.getDisplayName() %>
+        </div>
+    </div>
+
+    <h2>Lifetime Donation</h2>
+    <div class="row">
+        <div class="col">
+            $<%= records[user._id] %>
+        </div>
+        <div class="col">
+            $<%= records[friend._id] %>
+        </div>
+    </div>
+
+    <h2>Games Played</h2>
+    <div class="row">
+        <div class="col">
+            <% games[user._id].forEach((game) => { %>
+                <a href="/games/<%= game._id %>"><%= game.name %></a>
+            <% }); %>
+        </div>
+        <div class="col">
+            <% games[friend._id].forEach((game) => { %>
+                <a href="/games/<%= game._id %>"><%= game.name %></a>
+            <% }); %>
+        </div>
+    </div>
+
 <% include ../partials/footer %>

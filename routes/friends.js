@@ -5,6 +5,8 @@ const router = express.Router({mergeParams: true});
 
 const {isLoggedIn} = require('../middleware/misc');
 const Invitation = require('../models/invitation');
+const Player = require('../models/player');
+const Record = require('../models/record');
 const User = require('../models/user');
 
 // 'new' route
@@ -76,7 +78,45 @@ router.get('/:friendID', isLoggedIn, (req, res) => {
                 req.flash(`error`, `Error sending friend request: ${friendErr}`);
                 return res.redirect('back');
             } else {
-                return res.render('friends/show', {friend: foundFriend});
+                Player.find({ownerID: [req.user._id, foundFriend._id]}, (playerErr, players) => {
+                    if (playerErr) {
+                        console.error(`Error: ${playerErr}`);
+                        return res.redirect('back');
+                    } else {
+                        let playerLookup = {};
+                        players.forEach((player) => {
+                            playerLookup[player._id] = player.ownerID;
+                        });
+                        Record.find({playerID: players}).sort({createdAt: 'desc'}).populate('gameID').exec((recordErr, records) => {
+                            if (recordErr) {
+                                console.error(`Error: ${recordErr}`);
+                                res.redirect('back');
+                            } else {
+                                let games = {};
+                                games[req.user._id] = [];
+                                games[foundFriend._id] = [];
+
+                                let recordTotal = {};
+                                recordTotal[req.user._id] = 0;
+                                recordTotal[foundFriend._id] = 0;
+
+                                records.forEach((record) => {
+                                    const ownerID = playerLookup[record.playerID];
+                                    recordTotal[ownerID] += record.amountEarned;
+                                    if (games[ownerID].indexOf(record.gameID) === -1) {
+                                        games[ownerID].push(record.gameID);
+                                    }
+                                });
+
+                                Object.keys(recordTotal).forEach((key) => {
+                                    recordTotal[key] = Math.round(recordTotal[key] * 100) / 100;
+                                });
+
+                                return res.render('friends/show', {friend: foundFriend, games, records: recordTotal});
+                            }
+                        });
+                    }
+                });
             }
         });
     }
