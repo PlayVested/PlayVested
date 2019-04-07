@@ -75,7 +75,7 @@
         </div>
         <div class="container">
             <% records.forEach((record) => { %>
-                <div class="row">
+                <div class="row row-content">
                     <div class="col">
                         <%= new Date(record.createdAt).toDateString() %>
                     </div>
@@ -104,21 +104,20 @@
             <form class="form-inline" action="/allocations/bulk?_method=PUT" method="POST">
                 <div id="charityList" class="full-width">
                     <% allocations.forEach((allocation) => { %>
-                        <div class="row">
-                            <div class="col">
+                        <div class="row row-content">
+                            <div class="col-sm-3">
                                 <%= allocation.charityID.organizationName %>
                             </div>
                             <div class="col">
-                                <input type="number" name="allocations[<%= allocation._id %>]" value="<%= allocation.percentage %>">%
+                                <input type="number" name="allocations[<%= allocation._id %>]" value="<%= allocation.percentage %>" class="allocation-input">
+                                <span>%</span>
                             </div>
-                            <div class="col"></div>
-                            <div class="col"></div>
                         </div>
                     <% }); %>
                 </div>
                 <div class="full-width">
                     <div class="row">
-                        <div class="col">
+                        <div class="col-sm-3">
                             <% if (charities && charities.length > 0) { %>
                                 <select name="charity" id="charityDropdown" onchange="newAllocation(this)">
                                     <option value="" disabled selected>Add Charity</option>
@@ -130,48 +129,31 @@
                                 </select>
                             <% } %>
                         </div>
-                        <div class="col">
+                        <div class="col-sm-3">
                             <button class="btn btn-primary" type="submit">Save</button>
                         </div>
-                        <div class="col"></div>
-                        <div class="col"></div>
                     </div>
                 </div>
             </form>
         </div>
 
         <div class="row">
-            <div class="col">
+            <div class="col-sm-2">
                 <h2 class="page-header">Friends</h2>
             </div>
-            <div class="col">
-                <a href="/friends/new" class="btn btn-primary">Add Friend</a>
+            <div class="col add-friend">
+                <a href="/friends/new" class="btn btn-success">+</a>
             </div>
         </div>
         <div class="container">
-            <% invitations.forEach((invitation) => { %>
-                <div class="row">
-                    <div class="col">
-                        <%= invitation.invitedBy.getDisplayName() %>
-                    </div>
-                    <div class="col">
-                        <a href="/friends/<%= invitation.invitedBy._id %>/accept">
-                            <i class="far fa-check-circle w3-large w3-text-green"> Accept </i>
-                        </a>
-                        <a href="/friends/<%= invitation.invitedBy._id %>/reject">
-                            <i class="far fa-trash-alt w3-large w3-text-red"> Reject </i>
-                        </a>
-                    </div>
-                </div>
-            <% }); %>
             <% user.friends.forEach((friend) => { %>
-                <div class="row">
-                    <div class="col">
+                <div class="row row-content">
+                    <div class="col-sm-9">
                         <a href="/friends/<%= friend._id %>">
                             <%= friend.getDisplayName() %>
                         </a>
                     </div>
-                    <div class="col">
+                    <div class="col-sm-3">
                         <form class="delete-item" action="/friends/<%= friend._id %>?_method=DELETE" method="POST"
                             onsubmit="return confirm(`Are you sure you want to delete this friend?`)">
                             <button class="btn btn-danger">Delete</button>

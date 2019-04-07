@@ -88,7 +88,7 @@ router.post('/', (req, res) => {
     const newRecord = {
         playerID: req.body.playerID,
         gameID: req.body.gameID,
-        amountEarned: req.body.amountEarned,
+        amountEarned: Math.floor(req.body.amountEarned * 100) / 100,
     };
 
     if (!newRecord.playerID || !newRecord.gameID) {

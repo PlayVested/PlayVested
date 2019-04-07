@@ -13,6 +13,7 @@ const User = require('../models/user');
 // index route
 router.get('/', (req, res) => {
     let files = [];
+    let email = '';
     if (req.user) {
         files = [
             {
@@ -29,9 +30,18 @@ router.get('/', (req, res) => {
             const stats = fs.statSync('public/' + file.filename);
             file.date = stats.mtime.toLocaleDateString();
         });
+
+        email = req.user.email;
     }
 
-    res.render('home', {files});
+    Invitation.find({email: email, charityID: null, devID: null}).populate('invitedBy').exec((invitationErr, invitations) => {
+        if (invitationErr) {
+            console.error(`Error: ${invitationErr}`);
+            return res.redirect('back');
+        }
+
+        return res.render('home', {files, invitations});
+    });
 });
 
 // show signup form

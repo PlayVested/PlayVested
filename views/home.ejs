@@ -1,20 +1,56 @@
 <% include ./partials/header %>
 
     <h2>Gaming for Good</h2> 
+    <p>
+        Welcome to PlayVested!  Help us make the world a little better every day through gaming.
+    </p>
 
-    <br>
-    <a class="btn btn-block btn-primary" href="/developers">Developers</a></li>
-    <a class="btn btn-block btn-primary" href="/charities">Charities</a></li>
     <% if (user) { %>
-        <a class="btn btn-block btn-primary" href="/users/<%= user._id %>">Account Info</a>
+        <% if (invitations && invitations.length) { %>
+            <h2>Pending Friend Invitations</h2>
+            <% invitations.forEach((invitation) => { %>
+                <div class="row">
+                    <div class="col">
+                        <%= invitation.invitedBy.getDisplayName() %>
+                    </div>
+                    <div class="col">
+                        <a href="/friends/<%= invitation.invitedBy._id %>/accept">
+                            <i class="far fa-check-circle w3-large w3-text-green"> Accept </i>
+                        </a>
+                        <a href="/friends/<%= invitation.invitedBy._id %>/reject">
+                            <i class="far fa-trash-alt w3-large w3-text-red"> Reject </i>
+                        </a>
+                    </div>
+                    <div class="col">
+                    </div>
+                </div>
+            <% });
+        } %>
+
         <br>
-        <% files.forEach((file) => { %>
-            <div class="mb-4">
-                <a href="<%= file.filename %>" class="btn btn-secondary mr-2">Download</a>
-                <%= file.desc %>
-                [ Last Updated: <%= file.date %> ]
+
+        <% if (files && files.length) { %>
+            <h2>Unity Examples</h2>
+            <% files.forEach((file) => { %>
+                <div class="mb-4">
+                    <a href="<%= file.filename %>" class="btn btn-secondary mr-2">Download</a>
+                    <%= file.desc %>
+                    [ Last Updated: <%= file.date %> ]
+                </div>
+            <% }); 
+        } %>
+    <% } else { %>
+        <br>
+        
+        <div class="homepage-container">
+            <h2>Get started by creating an account or signing in</h2>
+            <div class="homepage-container">
+                <a class="btn btn-primary homepage-button" href="/register">sign up</a>
             </div>
-        <% }); %>
+            <div class="homepage-container">
+                <a class="btn btn-secondary homepage-button" href="/login">login</a>
+            </div>
+        </div>
     <% } %>
 
 <% include ./partials/footer %>

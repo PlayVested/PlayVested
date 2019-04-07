@@ -57,14 +57,7 @@ router.get('/:userID', isLoggedIn, (req, res) => {
                                         console.error(`Error: ${charityErr}`);
                                         res.redirect('back');
                                     } else {
-                                        Invitation.find({email: req.user.email, charityID: null, devID: null}).populate('invitedBy').exec((invitationErr, invitations) => {
-                                            if (invitationErr) {
-                                                console.error(`Error: ${invitationErr}`);
-                                                res.redirect('back');
-                                            } else {
-                                                return res.render('users/show', {records, allocations, charities, invitations});
-                                            }
-                                        });
+                                        return res.render('users/show', {records, allocations, charities});
                                     }
                                 });
                             }

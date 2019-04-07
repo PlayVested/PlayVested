@@ -24,6 +24,10 @@
     width: 100%;
 }
 
+.allocation-input {
+    padding-right: 5px;
+}
+
 .new-item-form div {
     width: 100%;
 }
@@ -41,8 +45,9 @@
     margin-bottom: 5px;
 }
 
-.note-container {
-    overflow: auto;
+.main-container {
+    padding-left: 25%;
+    padding-right: 25%;
 }
 
 .full-width {
@@ -54,7 +59,34 @@
 }
 
 .form-inline { 
-  display: flex;
-  flex-flow: row wrap;
-  align-items: center;
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
 }
+
+.homepage-container {
+    text-align: center;
+    padding: 5px;
+}
+ 
+.homepage-button {
+    width: 30%;
+}
+
+.add-friend {
+    display: -webkit-flexbox;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+}
+
+.row-content {
+    padding: 5px;
+}
+
+.row-content:nth-child(even) {background-color: #EEE8}
+.row-content:nth-child(odd) {background-color: white}
