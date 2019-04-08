@@ -15,21 +15,25 @@
 }
 
 .new-item-form {
-    width: 30%;
+    width: 50%;
     margin: 25px auto;
 }
 
-.new-item-form .form-inline .form-group input {
-    margin: 7px auto;
+.new-item-form div {
+    padding: 5px;
+}
+
+.new-item-form input {
     width: 100%;
+}
+
+.new-item-form button {
+    width: 100%;
+    text-align: center;
 }
 
 .allocation-input {
     padding-right: 5px;
-}
-
-.new-item-form div {
-    width: 100%;
 }
 
 .page-header {
@@ -84,9 +88,21 @@
     align-items: center;
 }
 
+.row-header {
+    padding: 5px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: lightgrey;
+}
+
 .row-content {
     padding: 5px;
 }
 
 .row-content:nth-child(even) {background-color: #EEE8}
 .row-content:nth-child(odd) {background-color: white}
+
+.register-input {
+    padding: 5px;
+    width: 100%;
+}

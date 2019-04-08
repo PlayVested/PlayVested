@@ -1,13 +1,15 @@
 <% include ./partials/header %>
 
-    <h2>Gaming for Good</h2> 
+    <h2 class="row-header">Gaming for Good</h2> 
     <p>
         Welcome to PlayVested!  Help us make the world a little better every day through gaming.
     </p>
 
+    <br>
+
     <% if (user) { %>
         <% if (invitations && invitations.length) { %>
-            <h2>Pending Friend Invitations</h2>
+            <h2 class="row-header">Pending Friend Invitations</h2>
             <% invitations.forEach((invitation) => { %>
                 <div class="row">
                     <div class="col">
@@ -17,7 +19,7 @@
                         <a href="/friends/<%= invitation.invitedBy._id %>/accept">
                             <i class="far fa-check-circle w3-large w3-text-green"> Accept </i>
                         </a>
-                        <a href="/friends/<%= invitation.invitedBy._id %>/reject">
+                        <a href="/friends/<%= invitation.invitedBy._id %>/reject" class="float-right">
                             <i class="far fa-trash-alt w3-large w3-text-red"> Reject </i>
                         </a>
                     </div>
@@ -30,10 +32,10 @@
         <br>
 
         <% if (files && files.length) { %>
-            <h2>Unity Examples</h2>
+            <h2 class="row-header">Unity Examples</h2>
             <% files.forEach((file) => { %>
-                <div class="mb-4">
-                    <a href="<%= file.filename %>" class="btn btn-secondary mr-2">Download</a>
+                <div class="mb-2">
+                    <a href="<%= file.filename %>" class="w3-button w3-blue mr-2">Download</a>
                     <%= file.desc %>
                     [ Last Updated: <%= file.date %> ]
                 </div>
@@ -45,10 +47,10 @@
         <div class="homepage-container">
             <h2>Get started by creating an account or signing in</h2>
             <div class="homepage-container">
-                <a class="btn btn-primary homepage-button" href="/register">sign up</a>
+                <a class="w3-button w3-blue homepage-button" href="/register">sign up</a>
             </div>
             <div class="homepage-container">
-                <a class="btn btn-secondary homepage-button" href="/login">login</a>
+                <a class="w3-button w3-gray homepage-button" href="/login">login</a>
             </div>
         </div>
     <% } %>
