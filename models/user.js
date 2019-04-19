@@ -18,6 +18,7 @@ const UserSchema = new mongoose.Schema({
     ],
     flags: {
         resetPassword: Boolean,
+        verificationPending: Boolean,
     },
 },
 {

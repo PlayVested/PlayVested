@@ -4,6 +4,8 @@ const nodemailer = require('nodemailer');
 const passport = require('passport');
 const router = express.Router({mergeParams: true});
 
+const emailUtil = require('../utils/email')
+
 const Charity = require('../models/charity');
 const Developer = require('../models/developer');
 const Invitation = require('../models/invitation');
@@ -49,8 +51,24 @@ router.get('/register', (req, res) => {
     res.render('register');
 });
 
+async function sendEmailVerification(req, res, email) {
+    const subjectStr = `Please verify your email`;
+    const bodyStr = `
+        <div>
+            Click <a href="${process.env.BASE_WEB_ADDRESS}/verify?email=${email}">here</a> to verify your email and start gaming for good
+        </div>
+    `;
+    const retVal = await emailUtil.sendEmail(email, subjectStr, bodyStr);
+    if (retVal && retVal.error) {
+        req.flash(`error`, `Failed to send verification email to ${email}: ${retVal.error}`);
+    } else {
+        req.flash(`success`, `Verification sent!`);
+    }
+    return res.render('verify', {email});
+}
+
 // handle signing up a new user
-router.post('/register', (req, res) => {
+router.post('/register', async (req, res) => {
     User.register(req.body.user, req.body.password, (err, newUser) => {
         if (err) {
             console.error(err);
@@ -67,15 +85,31 @@ router.post('/register', (req, res) => {
             } else {
                 // new user has been created
                 newUser.defaultPlayer = createdPlayer;
+                newUser.flags.verificationPending = true;
                 newUser.save();
 
-                req.body.username = req.body.user.username;
-                passport.authenticate('local', {
-                    successRedirect: '/',
-                    failureRedirect: '/register',
-                })(req, res, () => {});
+                // ask them to verify their email
+                return sendEmailVerification(req, res, newUser.username);
             }
         });
+    });
+});
+
+router.post('/resend', async (req, res) => {
+    return await sendEmailVerification(req, res, req.body.email);
+});
+
+router.get('/verify', (req, res) => {
+    User.findOne({username: req.query.email}, (userErr, foundUser) => {
+        if (userErr || !foundUser) {
+            req.flash(`error`, `Failed to find user associated with ${req.query.email}: ${userErr}`);
+            return res.redirect('/register');
+        } else {
+            req.flash(`success`, `Thank you for verifying your email`);
+            foundUser.flags.verificationPending = false;
+            foundUser.save();
+            return res.redirect(`/login?username=${req.query.email}`);
+        }
     });
 });
 
@@ -94,7 +128,9 @@ router.post('/login', passport.authenticate('local', {
         // if they are working with a temp password, send them to the edit user
         // page and fill in the old password for them
         req.flash(`error`, `Please create a new password`);
-        res.redirect(`/users/${user._id}/edit?oldPassword=${req.body.password}`);
+        return res.redirect(`/users/${user._id}/edit?oldPassword=${req.body.password}`);
+    } else if (user.flags.verificationPending) {
+        return res.render('verify', {email: user.username});
     } else {
         // go ahead and start the process of moving to the home page
         // the rest of this can happen async in the background

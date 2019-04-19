@@ -1,0 +1,10 @@
+<% include ./partials/header %>
+
+    <h2>Please verify email to log in</h2>
+
+    <form action="/resend" method="POST">
+        <input type="hidden" name="email" value="<%= email %>">
+        <button class="w3-button w3-blue">Resend verfication email</button>
+    </form>
+
+<% include ./partials/footer %>

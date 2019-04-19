@@ -3,9 +3,9 @@ const passport = require('passport');
 const router = express.Router({mergeParams: true});
 
 const { isLoggedIn } = require('../middleware/misc');
+
 const Allocation = require('../models/allocation');
 const Charity = require('../models/charity');
-const Invitation = require('../models/invitation');
 const Player = require('../models/player');
 const Record = require('../models/record');
 

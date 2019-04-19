@@ -49,7 +49,7 @@ router.post('/', isLoggedIn, (req, res) => {
                     </div>
                     <div>
                         Please go to
-                        <a href="https://${process.env.BASE_WEB_ADDRESS}/login?username=${invitation.email}">
+                        <a href="${process.env.BASE_WEB_ADDRESS}/login?username=${invitation.email}">
                             ${process.env.BASE_WEB_ADDRESS}
                         </a> and sign in or create an account to manage the invitation.
                     </div>

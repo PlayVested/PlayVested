@@ -74,7 +74,7 @@ router.post('/:orgID', isLoggedIn, async (req, res) => {
                     </div>
                     <div>
                         Please go to
-                        <a href="https://${process.env.BASE_WEB_ADDRESS}">
+                        <a href="${process.env.BASE_WEB_ADDRESS}">
                             ${process.env.BASE_WEB_ADDRESS}
                         </a> and sign in or create an account to accept the invitation.
                     </div>
