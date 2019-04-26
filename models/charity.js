@@ -1,24 +1,8 @@
 const mongoose = require('mongoose');
+const Company = require('./company');
 
 const CharitySchema = new mongoose.Schema({
-    organizationName: String,
-    phoneNumber: String,
-    address: String,
-    city: String,
-    state: String,
-    zipcode: String,
     taxID: String,
-    ownerID: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    }],
-},
-{
-  timestamps: true
-});
+}, Company.schema.options);
 
-CharitySchema.methods.getDisplayName = function getDisplayName() {
-    return this.organizationName;
-};
-
-module.exports = mongoose.model("Charity", CharitySchema);
+module.exports = Company.discriminator("Charity", CharitySchema);

@@ -34,7 +34,10 @@ const defaultUsers = [
 const defaultCharities = [
     {
         _id: `5bfe194f4de8110016de4340`,
-        organizationName: `Sad Puppies`,
+        verified: true,
+        name: `Sad Puppies`,
+        website: 'www.sadpuppied.org',
+        about: 'Saving the world, one sad puppy at a time',
         phoneNumber: '555-123-4567',
         address: `123 Whatever St`,
         city: `Champaign`,
@@ -44,7 +47,10 @@ const defaultCharities = [
     },
     {
         _id: `5bfe194f4de8110016de4341`,
-        organizationName: `Hungry Kids`,
+        verified: false,
+        name: `Hungry Kids`,
+        website: 'www.hungrykids.org',
+        about: 'No kid should go hungry',
         phoneNumber: '555-987-6543',
         address: `321 Downtown St`,
         city: `MoTown`,
@@ -57,7 +63,10 @@ const defaultCharities = [
 const defaultDevelopers = [
     {
         _id: `5bfe194f4de8110016de4342`,
-        companyName: `Extreme Games`,
+        verified: true,
+        name: `Extreme Games`,
+        website: 'www.extremegames.com',
+        about: 'Our games are Xtreme!',
         phoneNumber: `555-192-8374`,
         address: `135 Uppity Ln`,
         city: `Porkshank`,
@@ -66,7 +75,10 @@ const defaultDevelopers = [
     },
     {
         _id: `5bfe194f4de8110016de4343`,
-        companyName: `Darling Dolls`,
+        verified: false,
+        name: `Darling Dolls`,
+        website: 'www.doubleDgames.com',
+        about: 'Our games are up here',
         phoneNumber: `555-473-4389`,
         address: `2001 Space Oddity`,
         city: `Mooreplank`,

@@ -47,7 +47,7 @@ router.get('/:userID', isLoggedIn, (req, res) => {
                             } else {
                                 // sort alphabetically
                                 allocations.sort((a, b) => {
-                                    return (a.charityID.organizationName.localeCompare(b.charityID.organizationName));
+                                    return (a.charityID.name.localeCompare(b.charityID.name));
                                 });
 
                                 // track which charities they are already donating to

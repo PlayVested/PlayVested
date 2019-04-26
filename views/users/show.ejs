@@ -106,7 +106,7 @@
                     <% allocations.forEach((allocation) => { %>
                         <div class="row row-content">
                             <div class="col-sm-3">
-                                <%= allocation.charityID.organizationName %>
+                                <%= allocation.charityID.name %>
                             </div>
                             <div class="col">
                                 <input type="number" name="allocations[<%= allocation._id %>]" value="<%= allocation.percentage %>" class="allocation-input">
@@ -123,7 +123,7 @@
                                     <option value="" disabled selected>Add Charity</option>
                                     <% charities.forEach((charity) => { %>
                                         <option value="<%= charity._id %>">
-                                            <%= charity.organizationName %>
+                                            <%= charity.name %>
                                         </option>
                                     <% }); %>
                                 </select>

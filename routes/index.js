@@ -119,6 +119,7 @@ router.get('/login', (req, res) => {
 
 router.post('/login', passport.authenticate('local', {
     failureRedirect: '/login',
+    failureFlash: 'Invalid username or password',
 }), (req, res) => {
     // cache the user just in case anything happens to the session while
     // this is processing in the background
@@ -175,41 +176,31 @@ router.post('/login', passport.authenticate('local', {
 
         invitations.forEach((invitation) => {
             console.log(`charity: ${invitation.charityID}`);
+            const handleCompanyInvite = (err, foundCompany, companyType) => {
+                if (err) {
+                    req.flash(`error`, `Failed to get ${companyType} for invitation: ${err.message}`);
+                } else {
+                    // add the current user to the list of owners
+                    foundCompany.ownerID.push(user);
+                    foundCompany.save();
+                    req.flash(`success`, `You are now an owner of ${foundCompany.name}`);
+
+                    // invitation has been applied, go ahead and dump it
+                    invitation.remove((err) => {
+                        if (err) {
+                            req.flash(`error`, `Failed to remove invitation: ${err.message}`);
+                        }
+                    });
+                }
+            };
+
             if (invitation.charityID) {
                 Charity.findById(invitation.charityID, (err, foundCharity) => {
-                    if (err) {
-                        req.flash(`error`, `Failed to get charity for invitation: ${err.message}`);
-                    } else {
-                        // add the current user to the list of owners
-                        foundCharity.ownerID.push(user);
-                        foundCharity.save();
-                        req.flash(`success`, `You are now an owner of ${foundCharity.organizationName}`);
-
-                        // invitation has been applied, go ahead and dump it
-                        invitation.remove((err) => {
-                            if (err) {
-                                req.flash(`error`, `Failed to remove invitation: ${err.message}`);
-                            }
-                        });
-                    }
+                    handleCompanyInvite(err, foundCharity, 'charity');
                 });
             } else if (invitation.devID) {
                 Developer.findById(invitation.devID, (err, foundDeveloper) => {
-                    if (err) {
-                        req.flash(`error`, `Failed to get developer for invitation: ${err.message}`);
-                    } else {
-                        // add the current user to the list of owners
-                        foundDeveloper.ownerID.push(user);
-                        foundDeveloper.save();
-                        req.flash(`success`, `You are now an owner of ${foundDeveloper.companyName}`);
-
-                        // invitation has been applied, go ahead and dump it
-                        invitation.remove((err) => {
-                            if (err) {
-                                req.flash(`error`, `Failed to remove invitation: ${err.message}`);
-                            }
-                        });
-                    }
+                    handleCompanyInvite(err, foundDeveloper, 'developer');
                 });
             }
         });

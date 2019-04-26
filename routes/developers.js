@@ -7,9 +7,16 @@ const { isLoggedIn, isOwner } = require('../middleware/misc');
 const Developer = require('../models/developer');
 const Game = require('../models/game');
 
+const companyInfo = {
+    type: Developer.modelName,
+    route: 'developers',
+    customContent: [],
+    values: [],
+};
+
 // 'index' route
 router.get('/', (req, res) => {
-    Developer.find({}, (err, developers) => {
+    Developer.find({verified: true}, (err, developers) => {
         if (err) {
             console.error(`Error getting developers: ${err.message}`);
             res.redirect('/');
@@ -33,13 +40,15 @@ router.get('/:developerID/games', cacheDeveloper, (req, res) => {
 
 // 'new' route
 router.get('/new', isLoggedIn, (req, res) => {
-    res.render('developers/new');
+    res.render('companies/new', {
+        ...companyInfo,
+    });
 });
 
 // 'create' route
 router.post('/', isLoggedIn, (req, res) => {
-    req.body.developer.ownerID = [req.user._id];
-    Developer.create(req.body.developer, (err, createdDeveloper) => {
+    req.body.company.ownerID = [req.user._id];
+    Developer.create(req.body.company, (err, createdDeveloper) => {
         if (err) {
             console.error(`Error: ${err.message}`);
             req.flash(`error`, `Error creating developer: ${err.message}`);
@@ -54,7 +63,11 @@ router.post('/', isLoggedIn, (req, res) => {
 
 // 'show' route
 router.get('/:developerID', cacheDeveloper, (req, res) => {
-    return res.render('developers/show', { isOwner: isOwner(req.user, res.locals.developer) });
+    return res.render('companies/show', {
+        ...companyInfo,
+        company: res.locals.developer,
+        isOwner: isOwner(req.user, res.locals.developer)
+    });
 });
 
 // 'edit' route

@@ -6,9 +6,18 @@ const { isLoggedIn, isOwner } = require('../middleware/misc');
 
 const Charity = require('../models/charity');
 
+const companyInfo = {
+    type: Charity.modelName,
+    route: 'charities',
+    customContent: [{
+        label: 'Tax ID',
+        name: 'taxID',
+    }],
+};
+
 // 'index' route
 router.get('/', (req, res) => {
-    Charity.find({}, (err, charities) => {
+    Charity.find({verified: true}, (err, charities) => {
         if (err) {
             console.error(`Error getting charities: ${err.message}`);
             res.redirect('/');
@@ -20,13 +29,15 @@ router.get('/', (req, res) => {
 
 // 'new' route
 router.get('/new', isLoggedIn, (req, res) => {
-    res.render('charities/new');
+    res.render('companies/new', {
+        ...companyInfo,
+    });
 });
 
 // 'create' route
 router.post('/', isLoggedIn, (req, res) => {
-    req.body.charity.ownerID = [ req.user._id ];
-    Charity.create(req.body.charity, (err, createdCharity) => {
+    req.body.company.ownerID = [ req.user._id ];
+    Charity.create(req.body.company, (err, createdCharity) => {
         if (err) {
             console.error(`Error: ${err.message}`);
             req.flash(`error`, `Error creating charity: ${err.message}`);
@@ -41,7 +52,12 @@ router.post('/', isLoggedIn, (req, res) => {
 
 // 'show' route
 router.get('/:charityID', cacheCharity, (req, res) => {
-    return res.render('charities/show', { isOwner: isOwner(req.user, res.locals.charity) });
+    return res.render('companies/show', { 
+        ...companyInfo,
+        values: [res.locals.charity.taxID],
+        company: res.locals.charity,
+        isOwner: isOwner(req.user, res.locals.charity)
+    });
 });
 
 // 'edit' route

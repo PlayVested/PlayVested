@@ -1,42 +1,41 @@
 <% include ../partials/header %>
 
-    <a href="/developers">Back</a>
+    <a href="/<%= route %>">Back</a>
     <div>
         <div class="page-header">
-            <% if (isOwner) { %>
+            <h2>
+                Company Name: <%= company.name %>
+            </h2>
+            <h2>
+                Phone Number: <%= company.phoneNumber %>
+            </h2>
+            <h2>
+                Address: <%= company.address %>
+            </h2>
+            <h2>
+                City: <%= company.city %>
+            </h2>
+            <h2>
+                State: <%= company.state %>
+            </h2>
+            <h2>
+                Zipcode: <%= company.zipcode %>
+            </h2>
+            <% customContent.forEach((content, idx) => { %>
                 <h2>
-                    ID: <%= developer._id %>
+                    <%= content.label %>: <%= values[idx] %>
                 </h2>
-            <% } %>
-            <h2>
-                Company Name: <%= developer.name %>
-            </h2>
-            <h2>
-                Phone Number: <%= developer.phoneNumber %>
-            </h2>
-            <h2>
-                Address: <%= developer.address %>
-            </h2>
-            <h2>
-                City: <%= developer.city %>
-            </h2>
-            <h2>
-                State: <%= developer.state %>
-            </h2>
-            <h2>
-                Zipcode: <%= developer.zipcode %>
-            </h2>
-            <a href="/developers/<%= developer._id %>/games" class="w3-button w3-large w3-blue">Games</a>
+            <% }); %>
         </div>
         <% if (isOwner) { %>
             <div class="item-action">
-                <form class="delete-item" action="/developers/<%= developer._id %>?_method=DELETE" method="POST"
-                    onsubmit="return confirm(`Are you sure you want to delete this developer?`)">
+                <form class="delete-item" action="/<%= route %>/<%= company._id %>?_method=DELETE" method="POST"
+                    onsubmit="return confirm(`Are you sure you want to delete this charity?`)">
                     <button class="w3-button w3-red">Delete</button>
                 </form>
             </div>
             <div class="item-action">
-                <a href="/developers/<%= developer._id %>/edit" class="w3-button w3-yellow">Edit</a>
+                <a href="/<%= route %>/<%= company._id %>/edit" class="w3-button w3-yellow">Edit</a>
             </div>
         <% } %>
     </div>
@@ -49,11 +48,11 @@
                     <h2 class="page-header">Owners:</h2>
                 </div>
                 <div class="col add-friend">
-                    <a href="/invitations/developer/<%= developer._id %>" class="w3-button w3-green">+</a>
+                    <a href="/invitations/charity/<%= company._id %>" class="w3-button w3-green">+</a>
                 </div>
             </div>
             <br>
-            <% developer.ownerID.forEach((owner) => { %>
+            <% company.ownerID.forEach((owner) => { %>
                 <div class="row row-content">
                     <div class="col-sm-5">
                         <strong>
@@ -66,8 +65,8 @@
                         </strong>
                     </div>
                     <div class="col-sm-2">
-                        <% if (developer.ownerID.length > 1) { %>
-                            <form class="delete-item" action="/developers/<%= developer._id %>/owner/<%= owner._id %>?_method=DELETE" method="POST"
+                        <% if (company.ownerID.length > 1) { %>
+                            <form class="delete-item" action="/<%= route %>/<%= company._id %>/owner/<%= owner._id %>?_method=DELETE" method="POST"
                                 onsubmit="return confirm('Are you sure you want to remove <%= owner.getDisplayName() %> as an owner?');">
                                 <button type="submit" class="w3-button w3-red"><i class="fa fa-trash w3-small"></i></button>
                             </form>

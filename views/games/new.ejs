@@ -13,7 +13,7 @@
                 <select class="form-control" name="game[devID]">
                     <% developers.forEach((dev) => { %>
                         <option value="<%= dev._id %>" <%- dev._id.equals(selectedID) ? "selected" : "" %>>
-                            <%= dev.companyName %>
+                            <%= dev.name %>
                         </option>
                     <% }); %>
                 </select>

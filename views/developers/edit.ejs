@@ -7,7 +7,7 @@
     <div class="new-item-form">
         <form class="form-inline" name="editForm" action="/developers/<%= developer._id %>?_method=PUT" method="POST">
             <div class="form-group">
-                <input class="form-control" type="text" name="developer[companyName]" placeholder="Company Name" value="<%= developer.companyName %>">
+                <input class="form-control" type="text" name="developer[name]" placeholder="Company Name" value="<%= developer.name %>">
             </div>
             <div class="form-group">
                 <input class="form-control" type="text" name="developer[phoneNumber]" placeholder="Phone Number" value="<%= developer.phoneNumber %>">

@@ -41,7 +41,7 @@ router.post('/', (req, res) => {
         console.log(`Found Game: ${foundGame}`);
 
         // next make sure the charity they want to support exists
-        Charity.find({organizationName: req.body.charityName}, (err, foundCharities) => {
+        Charity.find({name: req.body.charityName}, (err, foundCharities) => {
             if (err || !foundCharities || foundCharities.length != 1) {
                 console.error(`Warning, charity not found`);
                 res.status(400);
