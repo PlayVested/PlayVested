@@ -11,7 +11,6 @@ const companyInfo = {
     type: Developer.modelName,
     route: 'developers',
     customContent: [],
-    values: [],
 };
 
 // 'index' route
@@ -21,7 +20,10 @@ router.get('/', (req, res) => {
             console.error(`Error getting developers: ${err.message}`);
             res.redirect('/');
         } else {
-            res.render('developers/index', { developers });
+            res.render('companies/index', {
+                ...companyInfo,
+                companies: developers,
+            });
         }
     });
 });
@@ -72,14 +74,9 @@ router.get('/:developerID', cacheDeveloper, (req, res) => {
 
 // 'edit' route
 router.get('/:developerID/edit', canEditDeveloper, (req, res) => {
-    Developer.find({}, (err, developers) => {
-        if (err) {
-            console.error(`Error: ${err.message}`);
-            req.flash(`error`, `Error editing developer: ${err.message}`);
-            res.redirect(`back`);
-        } else {
-            res.render('developers/edit', { developers });
-        }
+    return res.render('companies/edit', {
+        ...companyInfo,
+        company: res.locals.developer,
     });
 });
 
@@ -87,7 +84,7 @@ router.get('/:developerID/edit', canEditDeveloper, (req, res) => {
 router.put('/:developerID', canEditDeveloper, (req, res) => {
     const { developer } = res.locals;
     if (developer) {
-        Object.assign(developer, req.body.developer);
+        Object.assign(developer, req.body.company);
         developer.save();
         req.flash(`success`, `Updated developer info`);
         return res.redirect(`/developers/${developer._id}`);

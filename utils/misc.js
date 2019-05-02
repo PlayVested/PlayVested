@@ -32,4 +32,11 @@ module.exports = {
     
         return txt;
     },
+
+    injectValues: (content, values) => {
+        return content.map((field, idx) => ({
+            ...field,
+            value: values[idx] || '',
+        }));
+    },
 }

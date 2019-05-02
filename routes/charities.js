@@ -3,6 +3,7 @@ const router = express.Router({mergeParams: true});
 
 const { cacheCharity, canEditCharity } = require('../middleware/charity');
 const { isLoggedIn, isOwner } = require('../middleware/misc');
+const { injectValues } = require('../utils/misc');
 
 const Charity = require('../models/charity');
 
@@ -12,6 +13,7 @@ const companyInfo = {
     customContent: [{
         label: 'Tax ID',
         name: 'taxID',
+        value: '',
     }],
 };
 
@@ -22,7 +24,10 @@ router.get('/', (req, res) => {
             console.error(`Error getting charities: ${err.message}`);
             res.redirect('/');
         } else {
-            res.render('charities/index', {charities});
+            res.render('companies/index', {
+                ...companyInfo,
+                companies: charities,
+            });
         }
     });
 });
@@ -52,9 +57,11 @@ router.post('/', isLoggedIn, (req, res) => {
 
 // 'show' route
 router.get('/:charityID', cacheCharity, (req, res) => {
+    const values = [res.locals.charity.taxID];
+    const customContent = injectValues(companyInfo.customContent, values);
     return res.render('companies/show', { 
         ...companyInfo,
-        values: [res.locals.charity.taxID],
+        customContent,
         company: res.locals.charity,
         isOwner: isOwner(req.user, res.locals.charity)
     });
@@ -62,14 +69,20 @@ router.get('/:charityID', cacheCharity, (req, res) => {
 
 // 'edit' route
 router.get('/:charityID/edit', canEditCharity, (req, res) => {
-    return res.render('charities/edit');
+    const values = [res.locals.charity.taxID];
+    const customContent = injectValues(companyInfo.customContent, values);
+    return res.render('companies/edit', {
+        ...companyInfo,
+        customContent,
+        company: res.locals.charity,
+    });
 });
 
 // 'update' route
 router.put('/:charityID', canEditCharity, (req, res) => {
     const { charity } = res.locals;
     if (charity) {
-        Object.assign(charity, req.body.charity);
+        Object.assign(charity, req.body.company);
         charity.save();
         req.flash(`success`, `Updated charity info`);
         return res.redirect(`/charities/${charity._id}`);
