@@ -26,10 +26,31 @@
                     <div class="col">
                     </div>
                 </div>
-            <% });
-        } %>
+            <% }); %>
+            <br>
+        <% } %>
 
-        <br>
+        <% if (verifications && verifications.length) { %>
+            <h2 class="row-header">Pending Companies to Verify</h2>
+            <% verifications.forEach((verify) => { %>
+                <div class="row">
+                    <div class="col">
+                        <%= verify.getDisplayName() %>
+                    </div>
+                    <div class="col">
+                        <a href="/verify/<%= verify._id %>/accept">
+                            <i class="far fa-check-circle w3-large w3-text-green"> Accept </i>
+                        </a>
+                        <a href="/verify/<%= verify._id %>/reject" class="float-right">
+                            <i class="far fa-trash-alt w3-large w3-text-red"> Reject </i>
+                        </a>
+                    </div>
+                    <div class="col">
+                    </div>
+                </div>
+            <% }); %>
+            <br>
+        <% } %>
 
         <% if (files && files.length) { %>
             <h2 class="row-header">Unity Examples</h2>

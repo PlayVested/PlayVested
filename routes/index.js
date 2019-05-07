@@ -1,5 +1,6 @@
 const express = require('express');
 const fs = require('fs');
+const {canVerifyCompany} = require('../middleware/company');
 const nodemailer = require('nodemailer');
 const passport = require('passport');
 const router = express.Router({mergeParams: true});
@@ -7,14 +8,16 @@ const router = express.Router({mergeParams: true});
 const emailUtil = require('../utils/email')
 
 const Charity = require('../models/charity');
+const Company = require('../models/company');
 const Developer = require('../models/developer');
 const Invitation = require('../models/invitation');
 const Player = require('../models/player');
 const User = require('../models/user');
 
 // index route
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
     let files = [];
+    let verifications = [];
     let email = '';
     if (req.user) {
         files = [
@@ -33,16 +36,27 @@ router.get('/', (req, res) => {
             file.date = stats.mtime.toLocaleDateString();
         });
 
-        email = req.user.email;
+        email = req.user.username;
+
+        if (canVerifyCompany(req.user)) {
+            try {
+                verifications = await Company.find({verified: false});
+                // const charities = await Charity.find({verified: false});
+                // const developers = await Developer.find({verified: false});
+                // verifications = charities.concat(developers);
+            } catch (err) {
+                req.flash(`error`, `Error pulling companies to be verified`);
+            }
+        }
     }
 
-    Invitation.find({email: email, charityID: null, devID: null}).populate('invitedBy').exec((invitationErr, invitations) => {
+    Invitation.find({email, charityID: null, devID: null}).populate('invitedBy').exec((invitationErr, invitations) => {
         if (invitationErr) {
             console.error(`Error: ${invitationErr}`);
             return res.redirect('back');
         }
 
-        return res.render('home', {files, invitations});
+        return res.render('home', {files, invitations, verifications});
     });
 });
 

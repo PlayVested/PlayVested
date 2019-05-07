@@ -22,6 +22,7 @@ const invitationRoutes = require('./routes/invitations');
 const playerRoutes = require('./routes/player');
 const recordRoutes = require('./routes/records');
 const userRoutes = require('./routes/users');
+const verifyRoutes = require('./routes/verify');
 
 app.use(express.static(__dirname + "/public"));
 app.use(express.static("./lib"));
@@ -86,6 +87,7 @@ app.use('/invitations', invitationRoutes);
 app.use('/players', playerRoutes);
 app.use('/records', recordRoutes);
 app.use('/users', userRoutes);
+app.use('/verify', verifyRoutes);
 
 const PORT = process.env.PORT || 1979;
 const server = app.listen(PORT, () => {
