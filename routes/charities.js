@@ -42,6 +42,7 @@ router.get('/new', isLoggedIn, (req, res) => {
 // 'create' route
 router.post('/', isLoggedIn, (req, res) => {
     req.body.company.ownerID = [ req.user._id ];
+    req.body.company.verified = false;
     Charity.create(req.body.company, (err, createdCharity) => {
         if (err) {
             console.error(`Error: ${err.message}`);

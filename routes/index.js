@@ -40,10 +40,7 @@ router.get('/', async (req, res) => {
 
         if (canVerifyCompany(req.user)) {
             try {
-                verifications = await Company.find({verified: false});
-                // const charities = await Charity.find({verified: false});
-                // const developers = await Developer.find({verified: false});
-                // verifications = charities.concat(developers);
+                verifications = await Company.find({verified: {$ne: true}});
             } catch (err) {
                 req.flash(`error`, `Error pulling companies to be verified`);
             }

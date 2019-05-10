@@ -38,10 +38,10 @@
                         <%= verify.getDisplayName() %>
                     </div>
                     <div class="col">
-                        <a href="/verify/<%= verify._id %>/accept">
+                        <a href="/verify/accept/<%= verify._id %>">
                             <i class="far fa-check-circle w3-large w3-text-green"> Accept </i>
                         </a>
-                        <a href="/verify/<%= verify._id %>/reject" class="float-right">
+                        <a href="/verify/reject/<%= verify._id %>" class="float-right">
                             <i class="far fa-trash-alt w3-large w3-text-red"> Reject </i>
                         </a>
                     </div>
