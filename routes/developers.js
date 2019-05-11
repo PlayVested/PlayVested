@@ -15,7 +15,12 @@ const companyInfo = {
 
 // 'index' route
 router.get('/', (req, res) => {
-    Developer.find({verified: true}, (err, developers) => {
+    let matchOptions = [{verified: true}];
+    if (req.user) {
+        matchOptions.push({ownerID: req.user._id});
+    }
+
+    Developer.find({$or: matchOptions}, (err, developers) => {
         if (err) {
             console.error(`Error getting developers: ${err.message}`);
             res.redirect('/');

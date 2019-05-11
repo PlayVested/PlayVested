@@ -6,31 +6,33 @@
 
     <div class="new-item-form">
         <form class="form-inline" name="editForm" action="/<%= route %>/<%= company._id %>?_method=PUT" method="POST">
-            <div class="form-group">
-                <input class="form-control" type="text" name="company[name]" placeholder="Organization Name" value="<%= company.name %>">
-            </div>
-            <div class="form-group">
-                <input class="form-control" type="text" name="company[phoneNumber]" placeholder="Phone Number" value="<%= company.phoneNumber %>">
-            </div>
-            <div class="form-group">
-                <input class="form-control" type="text" name="company[address]" placeholder="Address" value="<%= company.address %>">
-            </div>
-            <div class="form-group">
-                <input class="form-control" type="text" name="company[city]" placeholder="City" value="<%= company.city %>">
-            </div>
-            <div class="form-group">
-                <input class="form-control" type="text" name="company[state]" placeholder="State" value="<%= company.state %>">
-            </div>
-            <div class="form-group">
-                <input class="form-control" type="text" name="company[zipcode]" placeholder="Zipcode" value="<%= company.zipcode %>">
-            </div>
-            <% customContent.forEach((content) => { %>
-                <div class="form-group">
-                    <input class="form-control" type="text" name="company[<%= content.name %>]" placeholder="<%= content.label %>" value="<%= content.value %>">
+            <div class="centered">
+                <div class="row">
+                    <input class="col-sm-12" type="text" name="company[name]" placeholder="Organization Name" value="<%= company.name %>">
                 </div>
-            <% }); %>
+                <div class="row">
+                    <input class="col-sm-12" type="text" name="company[phoneNumber]" placeholder="Phone Number" value="<%= company.phoneNumber %>">
+                </div>
+                <div class="row">
+                    <input class="col-sm-12" type="text" name="company[address]" placeholder="Address" value="<%= company.address %>">
+                </div>
+                <div class="row">
+                    <input class="col-sm-12" type="text" name="company[city]" placeholder="City" value="<%= company.city %>">
+                </div>
+                <div class="row">
+                    <input class="col-sm-12" type="text" name="company[state]" placeholder="State" value="<%= company.state %>">
+                </div>
+                <div class="row">
+                    <input class="col-sm-12" type="text" name="company[zipcode]" placeholder="Zipcode" value="<%= company.zipcode %>">
+                </div>
+                <% customContent.forEach((content) => { %>
+                    <div class="row">
+                        <input class="col-sm-12" type="text" name="company[<%= content.name %>]" placeholder="<%= content.label %>" value="<%= content.value %>">
+                    </div>
+                <% }); %>
 
-            <% include ../partials/formButtons %>
+                <% include ../partials/formButtons %>
+            </div>
         </form>
     </div>
 

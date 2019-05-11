@@ -2,6 +2,9 @@
 
     <a href="/<%= route %>">Back</a>
     <div>
+        <% if (!company.verified) { %>
+            <h2 class="unverified">UNVERIFIED</h2>
+        <% } %>
         <div class="page-header">
             <h2>
                 Company Name: <%= company.name %>

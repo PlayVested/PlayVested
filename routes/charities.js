@@ -19,7 +19,12 @@ const companyInfo = {
 
 // 'index' route
 router.get('/', (req, res) => {
-    Charity.find({verified: true}, (err, charities) => {
+    let matchOptions = [{verified: true}];
+    if (req.user) {
+        matchOptions.push({ownerID: req.user._id});
+    }
+
+    Charity.find({$or: matchOptions}, (err, charities) => {
         if (err) {
             console.error(`Error getting charities: ${err.message}`);
             res.redirect('/');
