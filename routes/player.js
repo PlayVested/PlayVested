@@ -42,7 +42,7 @@ router.post('/', (req, res) => {
 
         // next make sure the charity they want to support exists
         Charity.find({name: req.body.charityName}, (err, foundCharities) => {
-            if (err || !foundCharities || foundCharities.length != 1) {
+            if (err || !foundCharities || foundCharities.length !== 1) {
                 console.error(`Warning, charity not found`);
                 res.status(400);
                 res.send('Failed to find the charity');
